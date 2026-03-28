@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Юридические Услуги — Прайс-лист 2026</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #080b14;
+    --bg2: #0d1120;
+    --bg3: #111827;
+    --gold: #c9a84c;
+    --gold2: #e8c96d;
+    --gold3: #f5e09a;
+    --accent: #1e3a5f;
+    --accent2: #2a4f7c;
+    --text: #e8eaf0;
+    --text2: #9aa3b5;
+    --text3: #636d82;
+    --border: rgba(201,168,76,0.15);
+    --glass: rgba(255,255,255,0.03);
+    --shadow: 0 25px 60px rgba(0,0,0,0.6);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    padding: 80px 40px 60px;
+    text-align: center;
+    background: radial-gradient(ellipse 80% 60% at 50% -10%, rgba(201,168,76,0.12) 0%, transparent 70%);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a84c' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .badge {
+    display: inline-block;
+    padding: 6px 18px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.35);
+    border-radius: 50px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold2);
+    margin-bottom: 24px;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.2rem, 5vw, 4rem);
+    font-weight: 700;
+    line-height: 1.15;
+    background: linear-gradient(135deg, #fff 0%, var(--gold3) 50%, var(--gold) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 16px;
+  }
+  .hero p {
+    font-size: 1.05rem;
+    color: var(--text2);
+    max-width: 520px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+  }
+  .hero-meta {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    flex-wrap: wrap;
+  }
+  .hero-meta span {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    color: var(--text3);
+    font-weight: 500;
+  }
+  .hero-meta span i {
+    width: 6px; height: 6px;
+    background: var(--gold);
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  /* ── TABS ── */
+  .tabs-wrap {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(8,11,20,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+  }
+  .tabs {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    flex-shrink: 0;
+    padding: 16px 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text3);
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    transition: all 0.25s;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  .tab:hover { color: var(--text2); }
+  .tab.active {
+    color: var(--gold2);
+    border-bottom-color: var(--gold);
+  }
+
+  /* ── CONTENT ── */
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+  .section { display: none; }
+  .section.active { display: block; }
+
+  .section-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.9rem;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .section-title .icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: 1px solid rgba(201,168,76,0.25);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+  }
+  .section-count {
+    font-size: 0.8rem;
+    color: var(--text3);
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    padding: 4px 12px;
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 50px;
+  }
+
+  /* ── PRICE TABLE ── */
+  .table-wrap {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr {
+    background: linear-gradient(90deg, rgba(30,58,95,0.6), rgba(42,79,124,0.4));
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    padding: 14px 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--gold);
+    text-align: left;
+  }
+  th:not(:first-child) { text-align: right; }
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.2s;
+  }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: rgba(201,168,76,0.04); }
+  td {
+    padding: 16px 20px;
+    font-size: 0.88rem;
+    color: var(--text2);
+    text-align: left;
+    vertical-align: middle;
+  }
+  td:not(:first-child) { text-align: right; }
+  .service-name {
+    color: var(--text);
+    font-weight: 500;
+    font-size: 0.9rem;
+  }
+  .price-min { color: #5eead4; font-weight: 600; }
+  .price-avg {
+    color: var(--gold2);
+    font-weight: 700;
+    font-size: 0.95rem;
+  }
+  .price-max { color: #f87171; font-weight: 600; }
+  .note-cell {
+    font-size: 0.78rem;
+    color: var(--text3);
+    font-style: italic;
+    text-align: left !important;
+    max-width: 180px;
+  }
+  .price-bar-cell { padding: 12px 20px; }
+  .price-bar {
+    height: 4px;
+    background: linear-gradient(90deg, #5eead4, var(--gold2), #f87171);
+    border-radius: 2px;
+    opacity: 0.4;
+  }
+
+  /* ── SUBSCRIPTION CARDS ── */
+  .sub-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 20px;
+  }
+  .sub-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 28px 24px;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, border-color 0.3s, box-shadow 0.3s;
+    cursor: default;
+  }
+  .sub-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--gold), var(--gold3));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .sub-card:hover {
+    transform: translateY(-6px);
+    border-color: rgba(201,168,76,0.4);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 0 1px rgba(201,168,76,0.1);
+  }
+  .sub-card:hover::before { opacity: 1; }
+  .sub-card.featured {
+    background: linear-gradient(145deg, #111827, #0f1e35);
+    border-color: rgba(201,168,76,0.4);
+  }
+  .sub-card.featured::before { opacity: 1; }
+  .featured-badge {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: linear-gradient(135deg, var(--gold), var(--gold3));
+    color: #080b14;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    padding: 3px 10px;
+    border-radius: 50px;
+  }
+  .sub-tier {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--gold);
+    margin-bottom: 12px;
+  }
+  .sub-price {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .sub-price span {
+    font-size: 0.8rem;
+    font-weight: 400;
+    color: var(--text3);
+  }
+  .sub-hours {
+    font-size: 0.82rem;
+    color: var(--text2);
+    margin-bottom: 20px;
+  }
+  .sub-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 16px;
+  }
+  .sub-include {
+    font-size: 0.8rem;
+    color: var(--text3);
+    line-height: 1.6;
+    margin-bottom: 12px;
+  }
+  .sub-rate {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--text3);
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+  .sub-rate strong { color: var(--gold2); }
+
+  /* ── INFO CARDS ── */
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+  .info-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+  .info-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    background: rgba(201,168,76,0.1);
+    border: 1px solid rgba(201,168,76,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+  .info-label { font-size: 0.72rem; color: var(--text3); font-weight: 600; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .info-value { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+
+  /* ── FORMAT ── */
+  .fmt { font-feature-settings: "tnum"; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 32px;
+    border-top: 1px solid var(--border);
+    color: var(--text3);
+    font-size: 0.78rem;
+    line-height: 1.8;
+  }
+  footer strong { color: var(--gold); }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: rgba(201,168,76,0.3); border-radius: 3px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .section.active .table-wrap,
+  .section.active .sub-grid,
+  .section.active .info-grid {
+    animation: fadeUp 0.4s ease forwards;
+  }
+
+  @media (max-width: 640px) {
+    .hero { padding: 60px 20px 48px; }
+    th, td { padding: 12px 14px; }
+    .note-cell { display: none; }
+    .sub-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="badge">Московский регион · Март 2026</div>
+  <h1>Юридические<br>Услуги</h1>
+  <p>Актуальный прайс-лист с диапазоном цен от минимальных до максимальных значений по рынку</p>
+  <div class="hero-meta">
+    <span><i></i> Консультации</span>
+    <span><i></i> Гражданское право</span>
+    <span><i></i> Семейное право</span>
+    <span><i></i> Трудовые споры</span>
+    <span><i></i> Абонемент</span>
+  </div>
+</header>
+
+<nav class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="show('consultations',this)">💬 Консультации</button>
+    <button class="tab" onclick="show('civil',this)">⚖️ Гражданское</button>
+    <button class="tab" onclick="show('family',this)">👨‍👩‍👧 Семейное</button>
+    <button class="tab" onclick="show('land',this)">🏠 Земельное</button>
+    <button class="tab" onclick="show('labor',this)">💼 Трудовое</button>
+    <button class="tab" onclick="show('admin',this)">🏛️ Административное</button>
+    <button class="tab" onclick="show('other',this)">📋 Прочие услуги</button>
+    <button class="tab" onclick="show('subscription',this)">⭐ Абонемент</button>
+    <button class="tab" onclick="show('reference',this)">📊 Справка</button>
+  </div>
+</nav>
+
+<main class="content">
+
+  <!-- КОНСУЛЬТАЦИИ -->
+  <section id="consultations" class="section active">
+    <div class="section-header">
+      <div class="section-title">
+        <div class="icon">💬</div>
+        Консультации
+      </div>
+      <span class="section-count">5 услуг</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr>
+          <th style="width:36%">Вид услуги</th>
+          <th>Минимум</th>
+          <th>Средняя</th>
+          <th>Максимум</th>
+          <th style="text-align:left">Примечание</th>
+        </tr></thead>
+        <tbody>
+          <tr><td class="service-name">Устная консультация (15–30 мин)</td><td class="price-min fmt">500 ₽</td><td class="price-avg fmt">1 500 ₽</td><td class="price-max fmt">3 000 ₽</td><td class="note-cell">По телефону или очно</td></tr>
+          <tr><td class="service-name">Письменная консультация</td><td class="price-min fmt">2 500 ₽</td><td class="price-avg fmt">5 000 ₽</td><td class="price-max fmt">10 000 ₽</td><td class="note-cell">По email / WhatsApp</td></tr>
+          <tr><td class="service-name">Консультация в офисе (45 мин)</td><td class="price-min fmt">3 000 ₽</td><td class="price-avg fmt">5 000 ₽</td><td class="price-max fmt">7 000 ₽</td><td class="note-cell">С анализом документов</td></tr>
+          <tr><td class="service-name">Выездная консультация</td><td class="price-min fmt">6 000 ₽</td><td class="price-avg fmt">10 000 ₽</td><td class="price-max fmt">15 000 ₽</td><td class="note-cell">На выезде у клиента</td></tr>
+          <tr><td class="service-name">Письменный ответ (до 100 слов)</td><td class="price-min fmt">500 ₽</td><td class="price-avg fmt">1 000 ₽</td><td class="price-max fmt">2 000 ₽</td><td class="note-cell">Без подготовки</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ГРАЖДАНСКОЕ ПРАВО -->
+  <section id="civil" class="section">
+    <div class="section-header">
+      <div class="section-title"><div class="icon">⚖️</div>Гражданское право</div>
+      <span class="section-count">9 услуг</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:36%">Вид услуги</th><th>Минимум</th><th>Средняя</th><th>Максимум</th><th style="text-align:left">Примечание</th></tr></thead>
+        <tbody>
+          <tr><td class="service-name">Составление искового заявления</td><td class="price-min fmt">15 000 ₽</td><td class="price-avg fmt">25 000 ₽</td><td class="price-max fmt">50 000 ₽</td><td class="note-cell">С разработкой позиции</td></tr>
+          <tr><td class="service-name">Составление возражений на иск</td><td class="price-min fmt">15 000 ₽</td><td class="price-avg fmt">25 000 ₽</td><td class="price-max fmt">50 000 ₽</td><td class="note-cell">На предоставленные документы</td></tr>
+          <tr><td class="service-name">Адвокатский запрос</td><td class="price-min fmt">2 000 ₽</td><td class="price-avg fmt">3 000 ₽</td><td class="price-max fmt">5 000 ₽</td><td class="note-cell">Один запрос</td></tr>
+          <tr><td class="service-name">Ведение дела в суде 1-й инстанции</td><td class="price-min fmt">50 000 ₽</td><td class="price-avg fmt">85 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">Простая сложность</td></tr>
+          <tr><td class="service-name">Ведение дела в суде (средняя сложность)</td><td class="price-min fmt">85 000 ₽</td><td class="price-avg fmt">130 000 ₽</td><td class="price-max fmt">200 000 ₽</td><td class="note-cell">Несколько ответчиков/исков</td></tr>
+          <tr><td class="service-name">Ведение дела в суде (высокая сложность)</td><td class="price-min fmt">150 000 ₽</td><td class="price-avg fmt">200 000 ₽</td><td class="price-max fmt">300 000 ₽</td><td class="note-cell">Сложные вопросы</td></tr>
+          <tr><td class="service-name">Апелляционное обжалование</td><td class="price-min fmt">40 000 ₽</td><td class="price-avg fmt">75 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">В апелляционной инстанции</td></tr>
+          <tr><td class="service-name">Кассационная жалоба</td><td class="price-min fmt">3 750 ₽</td><td class="price-avg fmt">8 000 ₽</td><td class="price-max fmt">15 000 ₽</td><td class="note-cell">Подготовка и подача</td></tr>
+          <tr><td class="service-name">Участие в переговорах сторон</td><td class="price-min fmt">30 000 ₽</td><td class="price-avg fmt">50 000 ₽</td><td class="price-max fmt">80 000 ₽</td><td class="note-cell">В офисе адвоката</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- СЕМЕЙНОЕ ПРАВО -->
+  <section id="family" class="section">
+    <div class="section-header">
+      <div class="section-title"><div class="icon">👨‍👩‍👧</div>Семейное право</div>
+      <span class="section-count">9 услуг</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:36%">Вид услуги</th><th>Минимум</th><th>Средняя</th><th>Максимум</th><th style="text-align:left">Примечание</th></tr></thead>
+        <tbody>
+          <tr><td class="service-name">Расторжение брака (по согласию)</td><td class="price-min fmt">35 000 ₽</td><td class="price-avg fmt">45 000 ₽</td><td class="price-max fmt">60 000 ₽</td><td class="note-cell">При согласии обоих супругов</td></tr>
+          <tr><td class="service-name">Расторжение брака (спорное)</td><td class="price-min fmt">50 000 ₽</td><td class="price-avg fmt">75 000 ₽</td><td class="price-max fmt">120 000 ₽</td><td class="note-cell">Без согласия одного супруга</td></tr>
+          <tr><td class="service-name">Расторжение брака с иностранцем</td><td class="price-min fmt">70 000 ₽</td><td class="price-avg fmt">100 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">Осложненное производство</td></tr>
+          <tr><td class="service-name">Раздел имущества при разводе</td><td class="price-min fmt">50 000 ₽</td><td class="price-avg fmt">100 000 ₽</td><td class="price-max fmt">200 000 ₽</td><td class="note-cell">Сложный раздел</td></tr>
+          <tr><td class="service-name">Споры об алиментах</td><td class="price-min fmt">40 000 ₽</td><td class="price-avg fmt">70 000 ₽</td><td class="price-max fmt">120 000 ₽</td><td class="note-cell">Взыскание или изменение</td></tr>
+          <tr><td class="service-name">Определение места жительства ребенка</td><td class="price-min fmt">45 000 ₽</td><td class="price-avg fmt">80 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">Спор о детях</td></tr>
+          <tr><td class="service-name">Усыновление / удочерение</td><td class="price-min fmt">30 000 ₽</td><td class="price-avg fmt">60 000 ₽</td><td class="price-max fmt">100 000 ₽</td><td class="note-cell">Включая подготовку документов</td></tr>
+          <tr><td class="service-name">Опека / попечительство</td><td class="price-min fmt">20 000 ₽</td><td class="price-avg fmt">40 000 ₽</td><td class="price-max fmt">70 000 ₽</td><td class="note-cell">Установление опеки</td></tr>
+          <tr><td class="service-name">Брачный контракт</td><td class="price-min fmt">15 000 ₽</td><td class="price-avg fmt">25 000 ₽</td><td class="price-max fmt">40 000 ₽</td><td class="note-cell">Составление и оформление</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ЗЕМЕЛЬНОЕ ПРАВО -->
+  <section id="land" class="section">
+    <div class="section-header">
+      <div class="section-title"><div class="icon">🏠</div>Земельное право</div>
+      <span class="section-count">9 услуг</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:36%">Вид услуги</th><th>Минимум</th><th>Средняя</th><th>Максимум</th><th style="text-align:left">Примечание</th></tr></thead>
+        <tbody>
+          <tr><td class="service-name">Регистрация прав на дом</td><td class="price-min fmt">35 000 ₽</td><td class="price-avg fmt">55 000 ₽</td><td class="price-max fmt">80 000 ₽</td><td class="note-cell">Подготовка и регистрация</td></tr>
+          <tr><td class="service-name">Регистрация прав на гараж / машиноместо</td><td class="price-min fmt">15 000 ₽</td><td class="price-avg fmt">25 000 ₽</td><td class="price-max fmt">40 000 ₽</td><td class="note-cell">Оформление права</td></tr>
+          <tr><td class="service-name">Регистрация прав на участок земли</td><td class="price-min fmt">20 000 ₽</td><td class="price-avg fmt">35 000 ₽</td><td class="price-max fmt">60 000 ₽</td><td class="note-cell">Земельный участок</td></tr>
+          <tr><td class="service-name">Снятие с учета недвижимости</td><td class="price-min fmt">10 000 ₽</td><td class="price-avg fmt">15 000 ₽</td><td class="price-max fmt">25 000 ₽</td><td class="note-cell">Техническая операция</td></tr>
+          <tr><td class="service-name">Постановка на учет имущества</td><td class="price-min fmt">10 000 ₽</td><td class="price-avg fmt">15 000 ₽</td><td class="price-max fmt">25 000 ₽</td><td class="note-cell">Кадастровые работы</td></tr>
+          <tr><td class="service-name">Решение земельных споров</td><td class="price-min fmt">50 000 ₽</td><td class="price-avg fmt">100 000 ₽</td><td class="price-max fmt">200 000 ₽</td><td class="note-cell">Судебное разбирательство</td></tr>
+          <tr><td class="service-name">Составление договора купли-продажи</td><td class="price-min fmt">15 000 ₽</td><td class="price-avg fmt">25 000 ₽</td><td class="price-max fmt">45 000 ₽</td><td class="note-cell">С анализом документов</td></tr>
+          <tr><td class="service-name">Экспертиза договора по земле</td><td class="price-min fmt">6 000 ₽</td><td class="price-avg fmt">12 000 ₽</td><td class="price-max fmt">20 000 ₽</td><td class="note-cell">Проверка законности</td></tr>
+          <tr><td class="service-name">Сопровождение сделок с недвижимостью</td><td class="price-min fmt">30 000 ₽</td><td class="price-avg fmt">50 000 ₽</td><td class="price-max fmt">100 000 ₽</td><td class="note-cell">Комплексное сопровождение</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ТРУДОВОЕ ПРАВО -->
+  <section id="labor" class="section">
+    <div class="section-header">
+      <div class="section-title"><div class="icon">💼</div>Трудовое право</div>
+      <span class="section-count">11 услуг</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:36%">Вид услуги</th><th>Минимум</th><th>Средняя</th><th>Максимум</th><th style="text-align:left">Примечание</th></tr></thead>
+        <tbody>
+          <tr><td class="service-name">Консультация по трудовому праву</td><td class="price-min fmt">1 170 ₽</td><td class="price-avg fmt">3 000 ₽</td><td class="price-max fmt">5 000 ₽</td><td class="note-cell">Стандартная консультация</td></tr>
+          <tr><td class="service-name">Составление искового заявления</td><td class="price-min fmt">8 000 ₽</td><td class="price-avg fmt">15 000 ₽</td><td class="price-max fmt">30 000 ₽</td><td class="note-cell">Трудовой спор</td></tr>
+          <tr><td class="service-name">Составление возражений на иск</td><td class="price-min fmt">8 000 ₽</td><td class="price-avg fmt">15 000 ₽</td><td class="price-max fmt">30 000 ₽</td><td class="note-cell">Ответ на требования</td></tr>
+          <tr><td class="service-name">Представительство в суде (незак. увольнение)</td><td class="price-min fmt">70 000 ₽</td><td class="price-avg fmt">90 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">Восстановление на работе</td></tr>
+          <tr><td class="service-name">Взыскание заработной платы</td><td class="price-min fmt">70 000 ₽</td><td class="price-avg fmt">100 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">Полное взыскание</td></tr>
+          <tr><td class="service-name">Взыскание материального ущерба с работника</td><td class="price-min fmt">80 000 ₽</td><td class="price-avg fmt">120 000 ₽</td><td class="price-max fmt">180 000 ₽</td><td class="note-cell">От работодателя</td></tr>
+          <tr><td class="service-name">Восстановление на работе</td><td class="price-min fmt">70 000 ₽</td><td class="price-avg fmt">100 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">Судебное восстановление</td></tr>
+          <tr><td class="service-name">Отмена дисциплинарного взыскания</td><td class="price-min fmt">70 000 ₽</td><td class="price-avg fmt">90 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">Оспаривание приказа</td></tr>
+          <tr><td class="service-name">Установление факта трудовых отношений</td><td class="price-min fmt">70 000 ₽</td><td class="price-avg fmt">100 000 ₽</td><td class="price-max fmt">150 000 ₽</td><td class="note-cell">Признание отношений</td></tr>
+          <tr><td class="service-name">Апелляционная защита по трудовым делам</td><td class="price-min fmt">40 000 ₽</td><td class="price-avg fmt">70 000 ₽</td><td class="price-max fmt">120 000 ₽</td><td class="note-cell">В вышестоящей инстанции</td></tr>
+          <tr><td class="service-name">Составление жалобы в трудинспекцию</td><td class="price-min fmt">8 000 ₽</td><td class="price-avg fmt">12 000 ₽</td><td class="price-max fmt">20 000 ₽</td><td class="note-cell">Предъявление жалобы</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- АДМИНИСТРАТИВНОЕ ПРАВО -->
+  <section id="admin" class="section">
+    <div class="section-header">
+      <div class="section-title"><div class="icon">🏛️</div>Административное право</div>
+      <span class="section-count">10 услуг</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:36%">Вид услуги</th><th>Минимум</th><th>Средняя</th><th>Максимум</th><th style="text-align:left">Примечание</th></tr></thead>
+        <tbody>
+          <tr><td class="service-name">Консультация по административному праву</td><td class="price-min fmt">3 000 ₽</td><td class="price-avg fmt">5 000 ₽</td><td class="price-max fmt">8 000 ₽</td><td class="note-cell">Вопросы нарушений</td></tr>
+          <tr><td class="service-name">Составление жалобы на постановление</td><td class="price-min fmt">4 000 ₽</td><td class="price-avg fmt">8 000 ₽</td><td class="price-max fmt">15 000 ₽</td><td class="note-cell">Административная жалоба</td></tr>
+          <tr><td class="service-name">Апелляционная жалоба</td><td class="price-min fmt">10 000 ₽</td><td class="price-avg fmt">15 000 ₽</td><td class="price-max fmt">25 000 ₽</td><td class="note-cell">Обжалование в суде</td></tr>
+          <tr><td class="service-name">Адвокатский запрос</td><td class="price-min fmt">2 000 ₽</td><td class="price-avg fmt">3 000 ₽</td><td class="price-max fmt">5 000 ₽</td><td class="note-cell">Один запрос</td></tr>
+          <tr><td class="service-name">Ведение дела в суде (первые нарушения)</td><td class="price-min fmt">20 000 ₽</td><td class="price-avg fmt">35 000 ₽</td><td class="price-max fmt">60 000 ₽</td><td class="note-cell">Простые случаи</td></tr>
+          <tr><td class="service-name">Ведение дела в суде (сложные случаи)</td><td class="price-min fmt">35 000 ₽</td><td class="price-avg fmt">70 000 ₽</td><td class="price-max fmt">120 000 ₽</td><td class="note-cell">Серьезные нарушения</td></tr>
+          <tr><td class="service-name">Представление в суде</td><td class="price-min fmt">25 000 ₽</td><td class="price-avg fmt">50 000 ₽</td><td class="price-max fmt">100 000 ₽</td><td class="note-cell">Полное представительство</td></tr>
+          <tr><td class="service-name">Объяснения, ходатайства, заявления</td><td class="price-min fmt">4 000 ₽</td><td class="price-avg fmt">6 000 ₽</td><td class="price-max fmt">12 000 ₽</td><td class="note-cell">Процессуальные документы</td></tr>
+          <tr><td class="service-name">Абонентское обслуживание в месяц</td><td class="price-min fmt">15 000 ₽</td><td class="price-avg fmt">25 000 ₽</td><td class="price-max fmt">40 000 ₽</td><td class="note-cell">Постоянное сопровождение</td></tr>
+          <tr><td class="service-name">Юридическая помощь за день занятости</td><td class="price-min fmt">8 000 ₽</td><td class="price-avg fmt">12 000 ₽</td><td class="price-max fmt">20 000 ₽</td><td class="note-cell">Дневная ставка</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- ПРОЧИЕ УСЛУГИ -->
+  <section id="other" class="section">
+    <div class="section-header">
+      <div class="section-title"><div class="icon">📋</div>Прочие услуги</div>
+      <span class="section-count">10 услуг</span>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:36%">Вид услуги</th><th>Минимум</th><th>Средняя</th><th>Максимум</th><th style="text-align:left">Примечание</th></tr></thead>
+        <tbody>
+          <tr><td class="service-name">Составление договора (простого)</td><td class="price-min fmt">10 000 ₽</td><td class="price-avg fmt">15 000 ₽</td><td class="price-max fmt">25 000 ₽</td><td class="note-cell">Стандартные договоры</td></tr>
+          <tr><td class="service-name">Составление договора (сложного)</td><td class="price-min fmt">15 000 ₽</td><td class="price-avg fmt">30 000 ₽</td><td class="price-max fmt">50 000 ₽</td><td class="note-cell">Многосложные условия</td></tr>
+          <tr><td class="service-name">Экспертиза договора</td><td class="price-min fmt">6 000 ₽</td><td class="price-avg fmt">10 000 ₽</td><td class="price-max fmt">20 000 ₽</td><td class="note-cell">Проверка на законность</td></tr>
+          <tr><td class="service-name">Составление претензионного письма</td><td class="price-min fmt">5 000 ₽</td><td class="price-avg fmt">8 000 ₽</td><td class="price-max fmt">15 000 ₽</td><td class="note-cell">Досудебная претензия</td></tr>
+          <tr><td class="service-name">Составление жалобы в прокуратуру</td><td class="price-min fmt">8 000 ₽</td><td class="price-avg fmt">12 000 ₽</td><td class="price-max fmt">20 000 ₽</td><td class="note-cell">Исковая жалоба</td></tr>
+          <tr><td class="service-name">Сбор документов</td><td class="price-min fmt">5 000 ₽</td><td class="price-avg fmt">10 000 ₽</td><td class="price-max fmt">20 000 ₽</td><td class="note-cell">Подготовка пакета</td></tr>
+          <tr><td class="service-name">Составление декларации, уведомления</td><td class="price-min fmt">8 000 ₽</td><td class="price-avg fmt">12 000 ₽</td><td class="price-max fmt">20 000 ₽</td><td class="note-cell">Различные декларации</td></tr>
+          <tr><td class="service-name">Представление в исполнительном производстве</td><td class="price-min fmt">20 000 ₽</td><td class="price-avg fmt">40 000 ₽</td><td class="price-max fmt">80 000 ₽</td><td class="note-cell">Работа с приставами</td></tr>
+          <tr><td class="service-name">Наследственные дела (ведение в суде)</td><td class="price-min fmt">100 000 ₽</td><td class="price-avg fmt">150 000 ₽</td><td class="price-max fmt">250 000 ₽</td><td class="note-cell">Сложное наследство</td></tr>
+          <tr><td class="service-name">Исполнительное производство (полное)</td><td class="price-min fmt">20 000 ₽</td><td class="price-avg fmt">50 000 ₽</td><td class="price-max fmt">100 000 ₽</td><td class="note-cell">Взыскание по исполнительному</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- АБОНЕМЕНТ -->
+  <section id="subscription" class="section">
+    <div class="section-header">
+      <div class="section-title"><div class="icon">⭐</div>Абонентское обслуживание</div>
+      <span class="section-count">5 тарифов</span>
+    </div>
+    <div class="sub-grid">
+
+      <div class="sub-card">
+        <div class="sub-tier">Минимальный</div>
+        <div class="sub-price">25 000 <span>₽/мес</span></div>
+        <div class="sub-hours">20 часов юриста</div>
+        <div class="sub-divider"></div>
+        <div class="sub-include">Консультации, экспертиза документов</div>
+        <div class="sub-rate"><span>Сверхтарифная ставка</span><strong>3 000 ₽/ч</strong></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-tier">Базовый</div>
+        <div class="sub-price">30 000 <span>₽/мес</span></div>
+        <div class="sub-hours">20 часов юриста</div>
+        <div class="sub-divider"></div>
+        <div class="sub-include">Базовый пакет услуг</div>
+        <div class="sub-rate"><span>Сверхтарифная ставка</span><strong>3 000 ₽/ч</strong></div>
+      </div>
+
+      <div class="sub-card featured">
+        <div class="featured-badge">Popular</div>
+        <div class="sub-tier">Стандарт</div>
+        <div class="sub-price">45 000 <span>₽/мес</span></div>
+        <div class="sub-hours">35 часов юриста</div>
+        <div class="sub-divider"></div>
+        <div class="sub-include">Расширенный пакет услуг</div>
+        <div class="sub-rate"><span>Сверхтарифная ставка</span><strong>3 000 ₽/ч</strong></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-tier">Полный</div>
+        <div class="sub-price">90 000 <span>₽/мес</span></div>
+        <div class="sub-hours">75 часов юриста</div>
+        <div class="sub-divider"></div>
+        <div class="sub-include">Полное обслуживание</div>
+        <div class="sub-rate"><span>Сверхтарифная ставка</span><strong>3 000 ₽/ч</strong></div>
+      </div>
+
+      <div class="sub-card">
+        <div class="sub-tier">Максимальный</div>
+        <div class="sub-price">120 000 <span>₽/мес</span></div>
+        <div class="sub-hours">100 часов юриста</div>
+        <div class="sub-divider"></div>
+        <div class="sub-include">VIP обслуживание</div>
+        <div class="sub-rate"><span>Сверхтарифная ставка</span><strong>3 000 ₽/ч</strong></div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- СПРАВКА -->
+  <section id="reference" class="section">
+    <div class="section-header">
+      <div class="section-title"><div class="icon">📊</div>Справка по ценам</div>
+      <span class="section-count">Московский регион · Март 2026</span>
+    </div>
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-icon">📅</div>
+        <div><div class="info-label">Дата актуальности</div><div class="info-value">Март 2026</div></div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">📍</div>
+        <div><div class="info-label">Регион</div><div class="info-value">Московский регион</div></div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">💬</div>
+        <div><div class="info-label">Средняя консультация</div><div class="info-value">1 500 – 3 000 ₽</div></div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">⚖️</div>
+        <div><div class="info-label">Представление в суде</div><div class="info-value">50 000 – 100 000 ₽</div></div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">📁</div>
+        <div><div class="info-label">Полное ведение дела</div><div class="info-value">85 000 – 150 000 ₽</div></div>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">⏱️</div>
+        <div><div class="info-label">Часовая ставка юриста</div><div class="info-value">3 000 – 5 000 ₽</div></div>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="text-align:left">Фактор влияния на цену</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--text2);padding:18px 20px;line-height:1.7">
+            Цены могут варьироваться в зависимости от <strong style="color:var(--gold2)">квалификации юриста</strong>,
+            <strong style="color:var(--gold2)">сложности дела</strong> и <strong style="color:var(--gold2)">опыта адвоката</strong>.<br>
+            Также влияют: стаж, рейтинг адвоката, положительные отзывы, количество выигранных дел.
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <strong>Прайс Юридических Услуг</strong> · Московский регион · Март 2026<br>
+  Цены носят ориентировочный характер. Окончательная стоимость определяется индивидуально.
+</footer>
+
+<script>
+  function show(id, btn) {
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+  }
+</script>
+</body>
+</html>

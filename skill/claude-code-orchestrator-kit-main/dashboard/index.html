@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ОСТРОВ — Дашборд выручки</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; background: #0f1117; color: #e0e0e0; min-height: 100vh; }
+
+  .header {
+    background: linear-gradient(135deg, #1F3864 0%, #2E75B6 100%);
+    padding: 24px 32px;
+    display: flex; align-items: center; justify-content: space-between;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .header h1 { font-size: 24px; font-weight: 700; letter-spacing: 1px; color: #fff; }
+  .header span { font-size: 13px; color: #BDD7EE; }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 20px; }
+
+  /* KPI Cards */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+  .kpi-card {
+    border-radius: 12px; padding: 20px; position: relative; overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+  }
+  .kpi-card::before { content: ''; position: absolute; top: -30px; right: -30px; width: 100px; height: 100px; border-radius: 50%; background: rgba(255,255,255,0.08); }
+  .kpi-card .label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.8; margin-bottom: 8px; }
+  .kpi-card .value { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .kpi-card .change { font-size: 12px; opacity: 0.85; }
+  .kpi-blue  { background: linear-gradient(135deg, #2E75B6, #1a5a9a); }
+  .kpi-green { background: linear-gradient(135deg, #00B050, #008a3e); }
+  .kpi-dark  { background: linear-gradient(135deg, #1F3864, #152a4a); }
+  .kpi-orange{ background: linear-gradient(135deg, #E36C09, #b55207); }
+
+  /* Charts grid */
+  .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .chart-full { grid-column: 1 / -1; }
+
+  .chart-card {
+    background: #1a1d27; border-radius: 12px; padding: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: 1px solid #2a2d3a;
+  }
+  .chart-card h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #BDD7EE; margin-bottom: 16px; }
+  .chart-card canvas { max-height: 320px; }
+
+  /* Table */
+  .table-card {
+    background: #1a1d27; border-radius: 12px; padding: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.3); border: 1px solid #2a2d3a;
+    margin-bottom: 24px; overflow-x: auto;
+  }
+  .table-card h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; color: #BDD7EE; margin-bottom: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th {
+    background: #1F3864; color: #BDD7EE; padding: 10px 12px; text-align: right;
+    font-weight: 600; font-size: 11px; white-space: nowrap; position: sticky; top: 0;
+  }
+  th:first-child { text-align: left; }
+  td { padding: 9px 12px; border-bottom: 1px solid #2a2d3a; text-align: right; white-space: nowrap; }
+  td:first-child { text-align: left; font-weight: 500; color: #BDD7EE; }
+  tr:nth-child(even) td { background: #1e2130; }
+  tr:hover td { background: #252840; }
+  .total-row td { background: #2E75B6 !important; color: #fff; font-weight: 700; font-size: 13px; }
+  .mkm-row td { font-size: 11px; }
+  .pos { color: #4cdd7a; font-weight: 600; }
+  .neg { color: #ff6b6b; font-weight: 600; }
+
+  /* Tabs */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+  .tab {
+    padding: 8px 18px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 500;
+    border: 1px solid #2a2d3a; background: #1a1d27; color: #888; transition: all .2s;
+  }
+  .tab.active { background: #2E75B6; color: #fff; border-color: #2E75B6; }
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  @media (max-width: 900px) {
+    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .chart-full { grid-column: 1; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🏒 ОСТРОВ — Дашборд выручки</h1>
+  <span>Данные: Фев 2025 — Фев 2026</span>
+</div>
+
+<div class="container">
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card kpi-blue">
+      <div class="label">Фев 2026</div>
+      <div class="value">10 011 869 ₽</div>
+      <div class="change">▼ −7.0% к Янв 2026</div>
+    </div>
+    <div class="kpi-card kpi-green">
+      <div class="label">Янв 2026 — Рекорд</div>
+      <div class="value">10 761 796 ₽</div>
+      <div class="change">▲ +9.8% к Дек 2025</div>
+    </div>
+    <div class="kpi-card kpi-dark">
+      <div class="label">2025 год (Фев–Дек)</div>
+      <div class="value">85 758 833 ₽</div>
+      <div class="change">11 месяцев (без Авг)</div>
+    </div>
+    <div class="kpi-card kpi-orange">
+      <div class="label">Ср. месяц (активный)</div>
+      <div class="value">8 575 883 ₽</div>
+      <div class="change">без Июл/Авг (низкий сезон)</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('charts')">Графики</div>
+    <div class="tab" onclick="showTab('table')">Сводная таблица</div>
+    <div class="tab" onclick="showTab('mkm')">МесяцкМесяцу</div>
+  </div>
+
+  <!-- CHARTS TAB -->
+  <div id="tab-charts" class="tab-content active">
+    <div class="charts-grid">
+      <div class="chart-card chart-full">
+        <h3>Динамика выручки по месяцам</h3>
+        <canvas id="chartBar"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Структура выручки — Фев 2026</h3>
+        <canvas id="chartPie"></canvas>
+      </div>
+      <div class="chart-card">
+        <h3>Лёд vs Остальные категории</h3>
+        <canvas id="chartStacked"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLE TAB -->
+  <div id="tab-table" class="tab-content">
+    <div class="table-card">
+      <h3>Сводная таблица по категориям</h3>
+      <table id="svodnaya"></table>
+    </div>
+  </div>
+
+  <!-- MKM TAB -->
+  <div id="tab-mkm" class="tab-content">
+    <div class="chart-card" style="margin-bottom:20px">
+      <h3>Динамика выручки — линия</h3>
+      <canvas id="chartLine"></canvas>
+    </div>
+    <div class="table-card">
+      <h3>МесяцкМесяцу детализация</h3>
+      <table id="mkmTable"></table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const PERIODS = ['Фев 25','Мар 25','Апр 25','Май 25','Июн 25','Июл 25','Сен 25','Окт 25','Ноя 25','Дек 25','Янв 26','Фев 26'];
+const TOTALS  = [9482209,9286156,8444437,7589539,4391309,669428,6709948,9160302,10222953,9803452,10761796,10011869];
+
+const CATS = {
+  'Лёд':               [5518992,5615527,5478994,4983275,2216382,3762,4155090,5662380,6148231,5349953,6884056,6108925],
+  'Крытое футб. поле': [1322310,1147452,779525,715072,538014,224286,734285,1118572,1653309,1491410,1241771,1726066],
+  'ДФА':               [915971,799793,725231,582999,799899,3095,554096,778666,741905,802790,717894,686655],
+  'Секции':            [663286,665332,523240,519713,446858,377143,178190,435810,473239,574761,489039,427334],
+  'Спорт-зоны':        [640821,710195,624762,543514,132715,33142,736344,842971,816742,621577,639276,655624],
+  'Прокат/инвентарь':  [245020,229382,141638,102676,84491,6571,189524,264761,336808,341475,711950,333952],
+  'Хоккейная акад.':   [175047,118475,170285,142290,67857,21429,113848,57142,52719,87667,76381,72361],
+  'Мероприятия':       [0,0,0,0,0,0,48571,0,0,530333,0,0],
+  'Прочие':            [762,0,762,0,105093,0,0,0,0,3486,1429,952],
+};
+
+const PALETTE = ['#4472C4','#ED7D31','#A9D18E','#FFC000','#5B9BD5','#FF6B6B','#70AD47','#7030A0','#BDD7EE'];
+
+const fmt = n => n ? n.toLocaleString('ru-RU') + ' ₽' : '—';
+const fmtK = n => n >= 1000000 ? (n/1000000).toFixed(1)+'М' : n >= 1000 ? (n/1000).toFixed(0)+'К' : n;
+
+// ── Bar Chart ──
+new Chart(document.getElementById('chartBar'), {
+  type: 'bar',
+  data: {
+    labels: PERIODS,
+    datasets: [{
+      label: 'Выручка',
+      data: TOTALS,
+      backgroundColor: TOTALS.map((v,i) => i===10 ? '#00B050' : '#2E75B6'),
+      borderRadius: 6,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } }
+    },
+    scales: {
+      x: { ticks: { color: '#aaa' }, grid: { color: '#2a2d3a' } },
+      y: { ticks: { color: '#aaa', callback: v => fmtK(v) }, grid: { color: '#2a2d3a' } }
+    }
+  }
+});
+
+// ── Pie Chart (Feb 2026) ──
+const pieLabels = Object.keys(CATS);
+const pieData   = pieLabels.map(k => CATS[k][11]).filter(v => v > 0);
+const pieLabFil = pieLabels.filter(k => CATS[k][11] > 0);
+new Chart(document.getElementById('chartPie'), {
+  type: 'doughnut',
+  data: { labels: pieLabFil, datasets: [{ data: pieData, backgroundColor: PALETTE, borderWidth: 2, borderColor: '#1a1d27' }] },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { position: 'right', labels: { color: '#ccc', font: { size: 11 }, boxWidth: 14, padding: 10 } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${fmt(ctx.raw)} (${(ctx.raw/TOTALS[11]*100).toFixed(1)}%)` } }
+    }
+  }
+});
+
+// ── Stacked Bar ──
+const iceData  = CATS['Лёд'];
+const othData  = TOTALS.map((t,i) => t - iceData[i]);
+new Chart(document.getElementById('chartStacked'), {
+  type: 'bar',
+  data: {
+    labels: PERIODS,
+    datasets: [
+      { label: 'Лёд',       data: iceData, backgroundColor: '#4472C4', borderRadius: 4 },
+      { label: 'Остальное', data: othData, backgroundColor: '#ED7D31', borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    scales: {
+      x: { stacked: true, ticks: { color: '#aaa' }, grid: { color: '#2a2d3a' } },
+      y: { stacked: true, ticks: { color: '#aaa', callback: v => fmtK(v) }, grid: { color: '#2a2d3a' } }
+    },
+    plugins: {
+      legend: { labels: { color: '#ccc' } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${fmt(ctx.raw)}` } }
+    }
+  }
+});
+
+// ── Line Chart ──
+new Chart(document.getElementById('chartLine'), {
+  type: 'line',
+  data: {
+    labels: PERIODS,
+    datasets: [{
+      label: 'Выручка',
+      data: TOTALS,
+      borderColor: '#2E75B6',
+      backgroundColor: 'rgba(46,117,182,0.15)',
+      fill: true, tension: 0.4, pointRadius: 6,
+      pointBackgroundColor: TOTALS.map((v,i) => i===10 ? '#00B050' : '#2E75B6'),
+      pointBorderColor: '#fff', pointBorderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: ctx => ' ' + fmt(ctx.raw) } }
+    },
+    scales: {
+      x: { ticks: { color: '#aaa' }, grid: { color: '#2a2d3a' } },
+      y: { ticks: { color: '#aaa', callback: v => fmtK(v) }, grid: { color: '#2a2d3a' } }
+    }
+  }
+});
+
+// ── Сводная таблица ──
+(function() {
+  const t = document.getElementById('svodnaya');
+  let html = '<tr><th>Категория</th>';
+  PERIODS.forEach(p => html += `<th>${p}</th>`);
+  html += '<th>ИТОГО</th><th>Доля</th></tr>';
+
+  const grandTotal = TOTALS.reduce((a,b)=>a+b,0);
+
+  Object.entries(CATS).forEach(([cat, vals], ci) => {
+    const rowSum = vals.reduce((a,b)=>a+b,0);
+    if (!rowSum) return;
+    const share = (rowSum/grandTotal*100).toFixed(1);
+    html += `<tr><td>${cat}</td>`;
+    vals.forEach(v => html += `<td>${v ? v.toLocaleString('ru-RU') : '—'}</td>`);
+    html += `<td><strong>${rowSum.toLocaleString('ru-RU')}</strong></td><td>${share}%</td></tr>`;
+  });
+
+  html += '<tr class="total-row"><td>ИТОГО</td>';
+  TOTALS.forEach(t => html += `<td>${t.toLocaleString('ru-RU')}</td>`);
+  html += `<td>${grandTotal.toLocaleString('ru-RU')}</td><td>100%</td></tr>`;
+
+  // МкМ row
+  html += '<tr class="mkm-row"><td style="color:#BDD7EE">МЕС-к-МЕС %</td><td>—</td>';
+  for(let i=1;i<TOTALS.length;i++){
+    const pct = ((TOTALS[i]-TOTALS[i-1])/TOTALS[i-1]*100).toFixed(1);
+    const cls = pct>=0?'pos':'neg';
+    html += `<td class="${cls}">${pct>=0?'+':''}${pct}%</td>`;
+  }
+  html += '<td></td><td></td></tr>';
+  t.innerHTML = html;
+})();
+
+// ── МкМ таблица ──
+(function(){
+  const t = document.getElementById('mkmTable');
+  let html = '<tr><th style="text-align:left">Месяц</th><th>Выручка</th><th>Изм. руб.</th><th>Изм. %</th><th>Лёд</th><th>Доп. услуги</th><th>Доля Льда</th></tr>';
+  PERIODS.forEach((p,i) => {
+    const total = TOTALS[i];
+    const ice = CATS['Лёд'][i];
+    const delta = i===0 ? null : total - TOTALS[i-1];
+    const pct   = i===0 ? null : (total-TOTALS[i-1])/TOTALS[i-1]*100;
+    const cls = delta===null?'':delta>=0?'pos':'neg';
+    html += `<tr>
+      <td style="text-align:left;font-weight:600;color:#BDD7EE">${p}</td>
+      <td>${total.toLocaleString('ru-RU')} ₽</td>
+      <td class="${cls}">${delta===null?'—':(delta>=0?'+':'')+delta.toLocaleString('ru-RU')+' ₽'}</td>
+      <td class="${cls}">${pct===null?'—':(pct>=0?'+':'')+pct.toFixed(1)+'%'}</td>
+      <td>${ice.toLocaleString('ru-RU')} ₽</td>
+      <td>${(total-ice).toLocaleString('ru-RU')} ₽</td>
+      <td>${(ice/total*100).toFixed(1)}%</td>
+    </tr>`;
+  });
+  t.innerHTML = html;
+})();
+
+function showTab(name) {
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', ['charts','table','mkm'][i]===name));
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+}
+</script>
+</body>
+</html>

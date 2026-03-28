@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Анализ CRM воронок — Sport Vsegda</title>
+<style>
+  :root {
+    --blue: #1a56db;
+    --blue-light: #e8f0fe;
+    --red: #e02424;
+    --red-light: #fde8e8;
+    --green: #057a55;
+    --green-light: #def7ec;
+    --yellow: #c27803;
+    --yellow-light: #fdf6b2;
+    --gray: #374151;
+    --gray-light: #f3f4f6;
+    --border: #e5e7eb;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; color: #111827; background: #f9fafb; font-size: 15px; }
+
+  /* HEADER */
+  .header { background: #0f172a; color: white; padding: 36px 48px; }
+  .header-top { display: flex; justify-content: space-between; align-items: flex-start; }
+  .logo { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; opacity: 0.5; margin-bottom: 12px; }
+  .header h1 { font-size: 32px; font-weight: 700; line-height: 1.2; }
+  .header h1 span { color: #60a5fa; }
+  .header-meta { font-size: 13px; opacity: 0.5; text-align: right; line-height: 2; }
+  .header-stats { display: flex; gap: 40px; margin-top: 28px; padding-top: 28px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .stat { }
+  .stat-num { font-size: 28px; font-weight: 700; color: #60a5fa; }
+  .stat-label { font-size: 12px; opacity: 0.5; text-transform: uppercase; letter-spacing: 1px; margin-top: 2px; }
+
+  /* NAV */
+  .nav { background: #1e293b; display: flex; gap: 0; overflow-x: auto; }
+  .nav a { color: rgba(255,255,255,0.6); text-decoration: none; padding: 14px 20px; font-size: 13px; white-space: nowrap; transition: all .2s; border-bottom: 2px solid transparent; }
+  .nav a:hover, .nav a.active { color: white; border-bottom-color: #60a5fa; background: rgba(255,255,255,0.05); }
+
+  /* MAIN */
+  main { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
+
+  /* SECTION */
+  .section { margin-bottom: 60px; }
+  .section-title { font-size: 22px; font-weight: 700; color: #0f172a; margin-bottom: 6px; padding-bottom: 12px; border-bottom: 2px solid #e5e7eb; display: flex; align-items: center; gap: 10px; }
+  .section-title .badge { font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  .badge-critical { background: var(--red-light); color: var(--red); }
+  .badge-warn { background: var(--yellow-light); color: var(--yellow); }
+  .badge-ok { background: var(--green-light); color: var(--green); }
+
+  /* ALERT BOXES */
+  .alert { display: flex; gap: 12px; padding: 14px 16px; border-radius: 6px; margin-bottom: 12px; border-left: 3px solid; }
+  .alert-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .alert-text strong { display: block; margin-bottom: 2px; }
+  .alert-red { background: var(--red-light); border-color: var(--red); }
+  .alert-yellow { background: var(--yellow-light); border-color: var(--yellow); }
+  .alert-green { background: var(--green-light); border-color: var(--green); }
+  .alert-blue { background: var(--blue-light); border-color: var(--blue); }
+
+  /* FUNNEL CARD */
+  .funnel-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
+  .funnel-card { background: white; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .funnel-card-header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+  .funnel-card-header h3 { font-size: 16px; font-weight: 700; }
+  .stars { color: #fbbf24; font-size: 14px; }
+  .funnel-card-body { padding: 16px 20px; }
+
+  /* STAGE FLOW */
+  .stage-flow { display: flex; flex-direction: column; gap: 0; margin: 12px 0; }
+  .stage-item { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; position: relative; }
+  .stage-item:not(:last-child)::after { content: ''; position: absolute; left: 11px; top: 28px; width: 2px; height: calc(100% - 10px); background: #e5e7eb; }
+  .stage-dot { width: 22px; height: 22px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; z-index: 1; }
+  .dot-normal { background: #dbeafe; color: #1e40af; }
+  .dot-warn { background: #fef3c7; color: #92400e; }
+  .dot-bad { background: #fee2e2; color: #991b1b; }
+  .dot-won { background: #d1fae5; color: #065f46; }
+  .dot-lose { background: #fee2e2; color: #991b1b; }
+  .stage-name { font-size: 13px; color: #374151; padding-top: 3px; }
+  .stage-note { font-size: 11px; color: #ef4444; margin-left: 32px; margin-top: -2px; margin-bottom: 4px; font-style: italic; }
+
+  /* COMPARE TABLE */
+  .compare { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0; }
+  .compare-col { }
+  .compare-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; padding: 4px 8px; border-radius: 4px; display: inline-block; }
+  .label-current { background: #fee2e2; color: #991b1b; }
+  .label-proposed { background: #d1fae5; color: #065f46; }
+
+  /* PROBLEMS LIST */
+  .problems { margin: 10px 0; }
+  .problem-item { display: flex; gap: 8px; padding: 5px 0; font-size: 13px; color: #374151; }
+  .problem-item::before { content: '⚠'; color: #f59e0b; flex-shrink: 0; }
+  .propose-item { display: flex; gap: 8px; padding: 5px 0; font-size: 13px; color: #374151; }
+  .propose-item::before { content: '✓'; color: #10b981; flex-shrink: 0; font-weight: 700; }
+
+  /* PRIORITY TABLE */
+  .priority-table { width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); }
+  .priority-table th { background: #0f172a; color: white; padding: 12px 16px; text-align: left; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .priority-table td { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; vertical-align: top; }
+  .priority-table tr:last-child td { border-bottom: none; }
+  .priority-table tr:hover td { background: #f8fafc; }
+  .priority-badge { display: inline-block; padding: 3px 10px; border-radius: 4px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+  .p-high { background: #fee2e2; color: #991b1b; }
+  .p-mid { background: #fef3c7; color: #92400e; }
+  .p-low { background: #d1fae5; color: #065f46; }
+
+  /* SUMMARY BOXES */
+  .summary-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+  .summary-box { background: white; border: 1px solid var(--border); border-radius: 8px; padding: 20px; border-top: 3px solid; }
+  .summary-box.red { border-top-color: #ef4444; }
+  .summary-box.yellow { border-top-color: #f59e0b; }
+  .summary-box.green { border-top-color: #10b981; }
+  .summary-box h4 { font-size: 13px; text-transform: uppercase; letter-spacing: 1px; opacity: 0.6; margin-bottom: 8px; }
+  .summary-box ul { list-style: none; }
+  .summary-box ul li { font-size: 13px; padding: 3px 0; color: #374151; }
+  .summary-box ul li::before { content: '→ '; color: #94a3b8; }
+
+  /* FULL FUNNEL CARD */
+  .full-card { background: white; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 24px; overflow: hidden; }
+  .full-card-header { padding: 18px 24px; background: #0f172a; color: white; display: flex; align-items: center; justify-content: space-between; }
+  .full-card-header h3 { font-size: 17px; font-weight: 700; }
+  .full-card-body { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0; }
+  .full-card-col { padding: 20px 24px; }
+  .full-card-col:not(:last-child) { border-right: 1px solid var(--border); }
+  .col-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid; }
+  .col-title.current { color: #dc2626; border-color: #dc2626; }
+  .col-title.problems { color: #d97706; border-color: #d97706; }
+  .col-title.proposed { color: #059669; border-color: #059669; }
+
+  /* LEAD FUNNEL SPECIAL */
+  .lead-flow { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; margin: 12px 0; }
+  .lead-stage { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+  .ls-normal { background: #dbeafe; color: #1e40af; }
+  .ls-bad { background: #fee2e2; color: #991b1b; }
+  .ls-warn { background: #fef3c7; color: #92400e; }
+  .ls-won { background: #d1fae5; color: #065f46; }
+  .arrow { color: #9ca3af; font-size: 14px; }
+
+  /* FOOTER */
+  .footer { background: #0f172a; color: rgba(255,255,255,0.4); text-align: center; padding: 24px; font-size: 12px; margin-top: 60px; }
+
+  /* PRINT */
+  @media print {
+    .nav { display: none; }
+    .full-card { page-break-inside: avoid; }
+    body { background: white; }
+  }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .header { padding: 24px 20px; }
+    .header-stats { flex-wrap: wrap; gap: 20px; }
+    .full-card-body { grid-template-columns: 1fr; }
+    .full-card-col:not(:last-child) { border-right: none; border-bottom: 1px solid var(--border); }
+    .summary-grid { grid-template-columns: 1fr; }
+    .compare { grid-template-columns: 1fr; }
+    main { padding: 20px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="logo">Аналитический отчёт · CRM Bitrix24</div>
+      <h1>Анализ воронок продаж<br><span>Sport Vsegda</span></h1>
+    </div>
+    <div class="header-meta">
+      sport-vsegda.bitrix24.ru<br>
+      22 марта 2026<br>
+      Подготовлено: AI-анализ
+    </div>
+  </div>
+  <div class="header-stats">
+    <div class="stat"><div class="stat-num">44 105</div><div class="stat-label">Сделок в системе</div></div>
+    <div class="stat"><div class="stat-num">1 703</div><div class="stat-label">Лидов</div></div>
+    <div class="stat"><div class="stat-num">9</div><div class="stat-label">Воронок сделок</div></div>
+    <div class="stat"><div class="stat-num">96%</div><div class="stat-label">Потерь в ДФА</div></div>
+    <div class="stat"><div class="stat-num">7</div><div class="stat-label">Критических проблем</div></div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a href="#summary" class="active">Резюме</a>
+  <a href="#leads">Воронка лидов</a>
+  <a href="#deals">Воронки сделок</a>
+  <a href="#detail">Детальный разбор</a>
+  <a href="#priority">План оптимизации</a>
+</nav>
+
+<main>
+
+<!-- SECTION 1: РЕЗЮМЕ -->
+<div class="section" id="summary">
+  <div class="section-title">
+    Резюме: что происходит сейчас
+    <span class="badge badge-critical">Требует внимания</span>
+  </div>
+
+  <div class="alert alert-red">
+    <div class="alert-icon">🚨</div>
+    <div class="alert-text">
+      <strong>Главная проблема: воронки не работают как система</strong>
+      Лиды поступают, конвертируются в сделки, но по стадиям не движутся. В воронке ДФА 96% сделок мгновенно падают в «Проигрыш» без единого шага по воронке.
+    </div>
+  </div>
+
+  <div class="alert alert-yellow">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">
+      <strong>Нет связи лид → воронка сделок</strong>
+      Единая воронка лидов не маршрутизирует клиентов по направлениям (ДФА / Строительство / Кемп и т.д.). Менеджеры делают это вручную и непоследовательно.
+    </div>
+  </div>
+
+  <div class="alert alert-yellow">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">
+      <strong>Стадии-«кладбища»</strong>
+      В нескольких воронках есть стадии, из которых сделки не выходят: «Подвисшие», «Не ответил», «Исполняется» — без дедлайна и следующего действия.
+    </div>
+  </div>
+
+  <div class="alert alert-blue">
+    <div class="alert-icon">💡</div>
+    <div class="alert-text">
+      <strong>Лучшая воронка в системе — ЕВЕНТ</strong>
+      Полный цикл от брифа до закрывающих документов. Можно использовать как образец при перестройке остальных воронок.
+    </div>
+  </div>
+
+  <div class="summary-grid">
+    <div class="summary-box red">
+      <h4>Критические проблемы</h4>
+      <ul>
+        <li>96% потерь в ДФА без обработки</li>
+        <li>Логика лидов нарушена</li>
+        <li>Нет маршрутизации лид→сделка</li>
+        <li>Массовые катания — нет воронки</li>
+      </ul>
+    </div>
+    <div class="summary-box yellow">
+      <h4>Структурные недостатки</h4>
+      <ul>
+        <li>Стадии-«кладбища» в 4 воронках</li>
+        <li>Смешение продаж и удержания</li>
+        <li>Дублирование без адаптации</li>
+        <li>Нет обязательных полей</li>
+      </ul>
+    </div>
+    <div class="summary-box green">
+      <h4>Что работает хорошо</h4>
+      <ul>
+        <li>ЕВЕНТ — образцовая воронка</li>
+        <li>Строительство — детальная</li>
+        <li>Тендеры — правильная логика</li>
+        <li>HR — хорошая структура</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 2: ВОРОНКА ЛИДОВ -->
+<div class="section" id="leads">
+  <div class="section-title">
+    Воронка лидов
+    <span class="badge badge-critical">Критично</span>
+  </div>
+
+  <div class="full-card">
+    <div class="full-card-header">
+      <h3>Воронка лидов (общая для всех направлений)</h3>
+      <div class="stars">★★☆☆☆</div>
+    </div>
+    <div class="full-card-body">
+      <div class="full-card-col">
+        <div class="col-title current">Текущие стадии</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Не обработан</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">В работе — выслан опросный лист</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">В работе — определение потребности/КП</div></div>
+          <div class="stage-item"><div class="stage-dot dot-warn">4</div><div class="stage-name">Переведён в СДЕЛКУ</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">5</div><div class="stage-name">Качественный лид ⚠</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">6</div><div class="stage-name">Некачественный лид</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">7</div><div class="stage-name">Спам</div></div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title problems">Проблемы</div>
+        <div class="problems">
+          <div class="problem-item">«Качественный лид» стоит ПОСЛЕ «Переведён в сделку» — логика нарушена. Квалификация должна быть ДО конверсии.</div>
+          <div class="problem-item">CONVERTED — системный статус Bitrix24. Его нельзя использовать как ручную метку.</div>
+          <div class="problem-item">Нет маршрутизации: в какую из 9 воронок попадает лид — не определено.</div>
+          <div class="problem-item">«Опросный лист» как шаг 2 — не универсален: строительству нужен выезд, ДФА — приглашение на тренировку.</div>
+          <div class="problem-item">Все 1 703 лида помечены CONVERTED — нет реальной аналитики по качеству.</div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title proposed">Предлагаемая структура</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая заявка</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Первый контакт (взят в работу)</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Квалификация (наш клиент?)</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Определение направления</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">5</div><div class="stage-name">Переведён в воронку [название]</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">—</div><div class="stage-name">Некачественный / Спам</div></div>
+        </div>
+        <div style="margin-top:12px; padding: 10px; background:#f0fdf4; border-radius:6px; font-size:12px; color:#065f46;">
+          💡 При переводе в сделку — автоматически выбирать нужную воронку по направлению, которое выбрал менеджер на шаге 4.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 3: ОБЗОР ВОРОНОК -->
+<div class="section" id="deals">
+  <div class="section-title">
+    Воронки сделок — обзор
+  </div>
+
+  <div class="funnel-grid">
+
+    <!-- ЕВЕНТ -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>ЕВЕНТ</h3>
+        <div><span class="stars">★★★★★</span> <span class="badge badge-ok">Образец</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Бриф / Детализация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">КП</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Договор</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Счёт на предоплату</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">6</div><div class="stage-name">Подготовка / Проведение</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">7</div><div class="stage-name">Финальный счёт</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">8</div><div class="stage-name">Закрывающие документы</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Сделка провалена</div></div>
+        </div>
+        <div class="alert alert-green" style="margin-top:12px">
+          <div class="alert-icon">✅</div>
+          <div class="alert-text" style="font-size:12px">Полный цикл, чёткие этапы, есть контроль оплат и документов. Рекомендуем как эталон.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- СТРОИТЕЛЬСТВО -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>Строительство</h3>
+        <div><span class="stars">★★★★☆</span> <span class="badge badge-warn">Доработать</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Квалификация заявки</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Подвисшие</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Выезд на объект</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Переговоры</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">6</div><div class="stage-name">Произведение расчётов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">7</div><div class="stage-name">КП</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">8</div><div class="stage-name">Счёт на предоплату</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">9</div><div class="stage-name">Проектная документация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">10</div><div class="stage-name">Договор</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">11</div><div class="stage-name">Проведение работ</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">12</div><div class="stage-name">Реализация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">13</div><div class="stage-name">Финальный счёт</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+        </div>
+        <div class="alert alert-yellow" style="margin-top:12px">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text" style="font-size:12px">«Подвисшие» — не стадия процесса. Сделки там не выходят. Нужна автоматизация напоминаний.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ТЕНДЕРЫ -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>Тендеры</h3>
+        <div><span class="stars">★★★★☆</span> <span class="badge badge-warn">Доработать</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Анализ</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Контакт с заказчиком</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Расчёт стоимости</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Подготовка документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">6</div><div class="stage-name">Подача заявки</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">7</div><div class="stage-name">Торги</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">8</div><div class="stage-name">Итоги</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">9</div><div class="stage-name">Заключение контракта</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">10</div><div class="stage-name">В работе</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Мониторинг сделки</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+        </div>
+        <div class="alert alert-yellow" style="margin-top:12px">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text" style="font-size:12px">Опечатка «Спасм». Стадия «Мониторинг» — пассивная, нет чёткого выхода.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ДФА -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>ДФА (Детская Футбольная Академия)</h3>
+        <div><span class="stars">★★★☆☆</span> <span class="badge badge-critical">Критично</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Первичная консультация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Пробная тренировка</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Получение документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Покупка абонемента</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Продление абонемента ⚠</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Сделка провалена (96% сделок)</div></div>
+        </div>
+        <div class="alert alert-red" style="margin-top:12px">
+          <div class="alert-icon">🚨</div>
+          <div class="alert-text" style="font-size:12px">96% сделок падают в LOSE без движения! «Продление абонемента» — не часть воронки продаж, это отдельный retention-процесс.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- КЕМП -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>Кемп</h3>
+        <div><span class="stars">★★☆☆☆</span> <span class="badge badge-warn">Доработать</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Первичная консультация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Получение документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Покупка абонемента</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Сделка провалена</div></div>
+        </div>
+        <div class="alert alert-yellow" style="margin-top:12px">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text" style="font-size:12px">Нет пробного визита (как в ДФА). Нет стадии выставления счёта/оплаты — сразу «Покупка».</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ЛЁД/ЗАЛЫ -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>Лёд / Залы</h3>
+        <div><span class="stars">★★★★☆</span> <span class="badge badge-warn">Доработать</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Запрос информации</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Оффер / КП</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Согласование документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Выставление счёта / договора</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Исполняется</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Сделка провалена</div></div>
+        </div>
+        <div class="alert alert-yellow" style="margin-top:12px">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text" style="font-size:12px">«Исполняется» — пассивная стадия без чёткого действия и дедлайна. Нет контрольных точек.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ФУТБОЛ -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>Футбол</h3>
+        <div><span class="stars">★★☆☆☆</span> <span class="badge badge-critical">Переделать</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Запрос информации</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Оффер / КП</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Согласование документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Выставление счёта / договора</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Исполняется</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+        </div>
+        <div class="alert alert-red" style="margin-top:12px">
+          <div class="alert-icon">🚨</div>
+          <div class="alert-text" style="font-size:12px">Идентична воронке «Лёд/Залы» — скопирована без адаптации. Футбол — это абонементы и тренировки, логика продажи совсем другая.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- МАССОВЫЕ КАТАНИЯ -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>Массовые катания</h3>
+        <div><span class="stars">★★☆☆☆</span> <span class="badge badge-critical">Критично</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Покупка билета ⚠</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Перенос</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Реализация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Сделка провалена</div></div>
+        </div>
+        <div class="alert alert-red" style="margin-top:12px">
+          <div class="alert-icon">🚨</div>
+          <div class="alert-text" style="font-size:12px">«Покупка билета» — это уже результат продажи, а не начало воронки. Нет ни одного этапа ДО покупки. Воронка фиксирует факт, а не управляет процессом.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ПОДБОР ПЕРСОНАЛА -->
+    <div class="funnel-card">
+      <div class="funnel-card-header">
+        <h3>Подбор персонала</h3>
+        <div><span class="stars">★★★★☆</span> <span class="badge badge-warn">Доработать</span></div>
+      </div>
+      <div class="funnel-card-body">
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Получен отклик</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Не ответил</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Телефонное интервью проведено</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Приглашён на собеседование</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Собеседование проведено</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">6</div><div class="stage-name">Отправлен на согласование</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">7</div><div class="stage-name">Вышел на стажировку</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+        </div>
+        <div class="alert alert-yellow" style="margin-top:12px">
+          <div class="alert-icon">⚠️</div>
+          <div class="alert-text" style="font-size:12px">«Не ответил» — не стадия, это состояние. Нужна автоматизация: N попыток → закрыть. Без этого кандидаты застревают навсегда.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- SECTION 4: ДЕТАЛЬНЫЕ ПРЕДЛОЖЕНИЯ -->
+<div class="section" id="detail">
+  <div class="section-title">Предложения по оптимизации — детально</div>
+
+  <!-- ДФА -->
+  <div class="full-card">
+    <div class="full-card-header" style="background:#7c3aed">
+      <h3>ДФА — Детская Футбольная Академия</h3>
+      <div class="stars">Приоритет: ВЫСОКИЙ</div>
+    </div>
+    <div class="full-card-body">
+      <div class="full-card-col">
+        <div class="col-title current">Сейчас (9 стадий)</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Первичная консультация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Пробная тренировка</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Получение документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Покупка абонемента</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Продление абонемента</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Сделка провалена</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">?</div><div class="stage-name">Анализ причины провала</div></div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title problems">Что изменить и почему</div>
+        <div class="problems">
+          <div class="problem-item">Убрать «Продление абонемента» из воронки — создать отдельную воронку удержания клиентов</div>
+          <div class="problem-item">Добавить стадию «Квалификация» — проверка: возраст, локация, бюджет</div>
+          <div class="problem-item">Добавить «Выставление счёта» между «Документами» и «Покупкой»</div>
+          <div class="problem-item">Сделать «Причину проигрыша» обязательным полем при переводе в LOSE</div>
+          <div class="problem-item">Настроить автозадачи на каждом этапе</div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title proposed">Предлагаемая структура (8 стадий)</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Квалификация (возраст / район)</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Первичная консультация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Пробная тренировка назначена</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Пробная тренировка проведена</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">6</div><div class="stage-name">Оформление документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">7</div><div class="stage-name">Выставлен счёт на оплату</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Абонемент оплачен → WON</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Отказ (с обязательной причиной)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- МАССОВЫЕ КАТАНИЯ -->
+  <div class="full-card">
+    <div class="full-card-header" style="background:#b45309">
+      <h3>Массовые катания</h3>
+      <div class="stars">Приоритет: ВЫСОКИЙ</div>
+    </div>
+    <div class="full-card-body">
+      <div class="full-card-col">
+        <div class="col-title current">Сейчас (6 стадий)</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Покупка билета</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Перенос</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Реализация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Сделка провалена</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">?</div><div class="stage-name">Анализ причины провала</div></div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title problems">Что изменить и почему</div>
+        <div class="problems">
+          <div class="problem-item">«Покупка билета» как первая стадия — нет управления продажей ДО покупки</div>
+          <div class="problem-item">Нет стадии консультации / обработки интереса</div>
+          <div class="problem-item">Нет оффера — клиент звонит, а что происходит дальше неизвестно</div>
+          <div class="problem-item">«Реализация» — что это? Сеанс катания? Неочевидно</div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title proposed">Предлагаемая структура (7 стадий)</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новый запрос</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Консультация (дата, состав, цена)</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Бронирование подтверждено</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Оплата получена</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Сеанс проведён</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Завершено успешно</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Отмена / Отказ</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ФУТБОЛ -->
+  <div class="full-card">
+    <div class="full-card-header" style="background:#065f46">
+      <h3>Футбол</h3>
+      <div class="stars">Приоритет: СРЕДНИЙ</div>
+    </div>
+    <div class="full-card-body">
+      <div class="full-card-col">
+        <div class="col-title current">Сейчас (копия Лёд/Залы)</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Запрос информации</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Оффер / КП</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Согласование документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Выставление счёта / договора</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Исполняется</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title problems">Что изменить и почему</div>
+        <div class="problems">
+          <div class="problem-item">Воронка скопирована с аренды залов — для футбольных абонементов логика другая</div>
+          <div class="problem-item">Нет пробного занятия (как в ДФА)</div>
+          <div class="problem-item">Нет квалификации: для какой категории (дети/взрослые/команды)?</div>
+          <div class="problem-item">«Исполняется» — кладбище сделок без выхода</div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title proposed">Предлагаемая структура</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Квалификация (дети / взрослые / команда)</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Консультация / подбор программы</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Пробная тренировка</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Оформление документов</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">6</div><div class="stage-name">Оплата абонемента</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Клиент активен → WON</div></div>
+          <div class="stage-item"><div class="stage-dot dot-lose">✗</div><div class="stage-name">Отказ (с причиной)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- СТРОИТЕЛЬСТВО -->
+  <div class="full-card">
+    <div class="full-card-header" style="background:#1e3a5f">
+      <h3>Строительство</h3>
+      <div class="stars">Приоритет: НИЗКИЙ</div>
+    </div>
+    <div class="full-card-body">
+      <div class="full-card-col">
+        <div class="col-title current">Сейчас (16 стадий)</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Квалификация заявки</div></div>
+          <div class="stage-item"><div class="stage-dot dot-bad">!</div><div class="stage-name">Подвисшие ← проблема</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Выезд на объект</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Переговоры → ... → Финальный счёт</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Сделка успешна</div></div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title problems">Что изменить</div>
+        <div class="problems">
+          <div class="problem-item">«Подвисшие» — убрать как стадию. Вместо этого: автозадача «Связаться повторно через 3 дня» при отсутствии активности</div>
+          <div class="problem-item">Добавить поле «Бюджет клиента» как обязательное при квалификации</div>
+          <div class="problem-item">Стадия «Реализация» и «Проведение работ» — звучат одинаково, нужно разграничить</div>
+        </div>
+      </div>
+      <div class="full-card-col">
+        <div class="col-title proposed">Предлагаемая структура (14 стадий)</div>
+        <div class="stage-flow">
+          <div class="stage-item"><div class="stage-dot dot-normal">1</div><div class="stage-name">Новая</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">2</div><div class="stage-name">Квалификация заявки + бюджет</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">3</div><div class="stage-name">Выезд на объект назначен</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">4</div><div class="stage-name">Выезд проведён / Замеры сделаны</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">5</div><div class="stage-name">Переговоры</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">6</div><div class="stage-name">Расчёт / КП</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">7</div><div class="stage-name">Предоплата получена</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">8</div><div class="stage-name">Договор подписан</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">9</div><div class="stage-name">Проект. документация</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">10</div><div class="stage-name">Строительство идёт</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">11</div><div class="stage-name">Сдача объекта</div></div>
+          <div class="stage-item"><div class="stage-dot dot-normal">12</div><div class="stage-name">Финальный счёт</div></div>
+          <div class="stage-item"><div class="stage-dot dot-won">✓</div><div class="stage-name">Завершено</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- SECTION 5: ПЛАН -->
+<div class="section" id="priority">
+  <div class="section-title">План оптимизации — приоритеты</div>
+
+  <table class="priority-table">
+    <thead>
+      <tr>
+        <th>Приоритет</th>
+        <th>Воронка / объект</th>
+        <th>Главная проблема</th>
+        <th>Что сделать</th>
+        <th>Ожидаемый эффект</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><span class="priority-badge p-high">Высокий</span></td>
+        <td><strong>Воронка лидов</strong></td>
+        <td>Нарушена логика статусов, нет маршрутизации</td>
+        <td>Переделать порядок стадий, добавить «Определение направления»</td>
+        <td>Лиды попадают в правильные воронки, нет хаоса</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-high">Высокий</span></td>
+        <td><strong>ДФА</strong></td>
+        <td>96% сделок в LOSE, нет квалификации, нет обязательных полей</td>
+        <td>Добавить квалификацию, убрать «Продление», сделать причину LOSE обязательной</td>
+        <td>Видна реальная конверсия, понятны причины потерь</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-high">Высокий</span></td>
+        <td><strong>Массовые катания</strong></td>
+        <td>Воронка начинается с результата, нет управления продажей</td>
+        <td>Добавить стадии до покупки: консультация → бронь → оплата</td>
+        <td>Появится возможность работать с незакрытыми заявками</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-mid">Средний</span></td>
+        <td><strong>Футбол</strong></td>
+        <td>Скопирована с аренды, не подходит для абонементов</td>
+        <td>Переделать под модель ДФА с пробным занятием</td>
+        <td>Управляемая воронка продаж абонементов</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-mid">Средний</span></td>
+        <td><strong>Кемп</strong></td>
+        <td>Нет пробного визита, нет выставления счёта</td>
+        <td>Добавить «Ознакомительный день» и «Выставлен счёт»</td>
+        <td>Контроль оплаты и ознакомления</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-mid">Средний</span></td>
+        <td><strong>Лёд / Залы</strong></td>
+        <td>«Исполняется» — пассивная стадия-кладбище</td>
+        <td>Разбить на «Договор подписан» + «Аренда идёт» с датой окончания</td>
+        <td>Контрольные точки, своевременное закрытие</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-low">Низкий</span></td>
+        <td><strong>Строительство</strong></td>
+        <td>«Подвисшие» как стадия</td>
+        <td>Убрать стадию, настроить автозадачи при отсутствии активности</td>
+        <td>Нет кладбища сделок, есть напоминания</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-low">Низкий</span></td>
+        <td><strong>HR (Подбор)</strong></td>
+        <td>«Не ответил» как стадия</td>
+        <td>Убрать стадию, настроить автозадачу «3 попытки → закрыть»</td>
+        <td>Кандидаты не висят вечно</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-low">Низкий</span></td>
+        <td><strong>Тендеры</strong></td>
+        <td>Опечатка «Спасм», пассивный «Мониторинг»</td>
+        <td>Исправить опечатку, добавить чёткий критерий выхода из «Мониторинга»</td>
+        <td>Аккуратность данных</td>
+      </tr>
+      <tr>
+        <td><span class="priority-badge p-low">Низкий</span></td>
+        <td><strong>ЕВЕНТ</strong></td>
+        <td>—</td>
+        <td>Ничего не менять. Использовать как образец.</td>
+        <td>Эталон для других воронок</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div style="margin-top:32px">
+    <div class="alert alert-blue">
+      <div class="alert-icon">💡</div>
+      <div class="alert-text">
+        <strong>Ключевое правило для всех воронок:</strong>
+        Каждая стадия должна отвечать на вопрос «Что делает менеджер прямо сейчас?». Если стадия описывает состояние («подвисшие», «не ответил», «исполняется») — это не стадия, а диагноз. Замените на действие или автоматизацию.
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:20px">
+    <div class="alert alert-green">
+      <div class="alert-icon">✅</div>
+      <div class="alert-text">
+        <strong>Дополнительная рекомендация — Retention-воронка</strong>
+        Создайте отдельную воронку «Продление / Удержание» для действующих клиентов ДФА, Кемп, Футбол. Это разделит процессы новых продаж и удержания, и даст чистую аналитику по обоим направлениям.
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<div class="footer">
+  Аналитический отчёт подготовлен на основе данных Bitrix24 API · sport-vsegda.bitrix24.ru · 22 марта 2026
+</div>
+
+<script>
+  // Активная ссылка в навигации при скролле
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('.nav a');
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(s => {
+      if (window.scrollY >= s.offsetTop - 100) current = s.id;
+    });
+    navLinks.forEach(a => {
+      a.classList.remove('active');
+      if (a.getAttribute('href') === '#' + current) a.classList.add('active');
+    });
+  });
+  navLinks.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      document.querySelector(a.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+</script>
+</body>
+</html>

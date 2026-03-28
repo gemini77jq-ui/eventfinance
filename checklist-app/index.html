@@ -1,0 +1,1890 @@
+<!DOCTYPE html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0d0d14">
+<title>CheckPro</title>
+<style>
+:root {
+  --bg: #0d0d14;
+  --bg2: #13131f;
+  --card: #1c1c2e;
+  --elevated: #242438;
+  --accent: #7c6cfc;
+  --accent2: #a29bfe;
+  --glow: rgba(124,108,252,.25);
+  --pink: #ff6b9d;
+  --green: #4ade80;
+  --green-bg: rgba(74,222,128,.12);
+  --amber: #fbbf24;
+  --amber-bg: rgba(251,191,36,.12);
+  --red: #f87171;
+  --red-bg: rgba(248,113,113,.12);
+  --gray: #6b7280;
+  --gray-bg: rgba(107,114,128,.12);
+  --t1: #f8f8ff;
+  --t2: #a0a0c0;
+  --t3: #5a5a7a;
+  --border: rgba(124,108,252,.12);
+  --border2: rgba(124,108,252,.25);
+  --sh: 0 4px 24px rgba(0,0,0,.5);
+  --r1: 8px; --r2: 14px; --r3: 20px; --r4: 28px;
+  --nav: 64px;
+  --hdr: 60px;
+  --safe-b: env(safe-area-inset-bottom, 0px);
+  --safe-t: env(safe-area-inset-top, 0px);
+  --tr: all .25s cubic-bezier(.4,0,.2,1);
+}
+[data-theme="light"] {
+  --bg: #f0f0fa;
+  --bg2: #f8f8ff;
+  --card: #ffffff;
+  --elevated: #f0f0fa;
+  --accent: #6c5ce7;
+  --accent2: #a29bfe;
+  --glow: rgba(108,92,231,.15);
+  --pink: #fd79a8;
+  --green: #00b894;
+  --green-bg: rgba(0,184,148,.1);
+  --amber: #e17055;
+  --amber-bg: rgba(253,203,110,.15);
+  --red: #e17055;
+  --red-bg: rgba(225,112,85,.1);
+  --gray: #636e72;
+  --gray-bg: rgba(99,110,114,.1);
+  --t1: #1a1a2e;
+  --t2: #4a4a6a;
+  --t3: #9090b0;
+  --border: rgba(108,92,231,.1);
+  --border2: rgba(108,92,231,.22);
+  --sh: 0 4px 24px rgba(0,0,0,.08);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px;-webkit-text-size-adjust:100%}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--t1);min-height:100vh;min-height:100dvh;overflow-x:hidden;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+img,video{max-width:100%;display:block}
+button{cursor:pointer;border:none;background:none;font:inherit;color:inherit}
+input,textarea{font:inherit;color:inherit}
+a{color:inherit;text-decoration:none}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+
+/* ── AUTH SCREEN ── */
+#auth-screen{position:fixed;inset:0;z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;background:var(--bg);overflow:hidden}
+.auth-bg{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 0%,var(--glow),transparent 70%);pointer-events:none}
+.auth-blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.4;animation:blobFloat 8s ease-in-out infinite alternate}
+.auth-blob:nth-child(1){width:400px;height:400px;background:var(--accent);top:-100px;left:-100px;animation-delay:0s}
+.auth-blob:nth-child(2){width:300px;height:300px;background:var(--pink);bottom:-80px;right:-60px;animation-delay:-3s}
+@keyframes blobFloat{from{transform:translate(0,0) scale(1)}to{transform:translate(30px,20px) scale(1.08)}}
+.auth-content{position:relative;text-align:center;padding:40px 32px}
+.auth-logo{width:80px;height:80px;background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:24px;display:flex;align-items:center;justify-content:center;font-size:36px;margin:0 auto 24px;box-shadow:0 8px 32px var(--glow)}
+.auth-title{font-size:32px;font-weight:800;letter-spacing:-1px;margin-bottom:8px;background:linear-gradient(135deg,var(--t1),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.auth-sub{color:var(--t2);font-size:15px;margin-bottom:40px}
+.auth-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;max-width:320px;padding:16px 24px;border-radius:var(--r3);font-size:16px;font-weight:600;transition:var(--tr);margin:0 auto 12px}
+.auth-btn-primary{background:linear-gradient(135deg,var(--accent),#a855f7);color:#fff;box-shadow:0 4px 20px var(--glow)}
+.auth-btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 28px var(--glow)}
+.auth-btn-primary:active{transform:translateY(0)}
+.auth-btn-secondary{background:var(--card);color:var(--t1);border:1px solid var(--border2)}
+.auth-btn-secondary:hover{background:var(--elevated)}
+
+/* demo user picker */
+#demo-picker{display:none;position:relative;text-align:center}
+.demo-title{font-size:18px;font-weight:700;margin-bottom:20px;color:var(--t1)}
+.demo-user{display:flex;align-items:center;gap:14px;padding:14px 16px;background:var(--card);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:10px;cursor:pointer;transition:var(--tr);max-width:320px;margin-left:auto;margin-right:auto}
+.demo-user:hover{border-color:var(--border2);background:var(--elevated)}
+.demo-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.demo-user-info{text-align:left}
+.demo-user-name{font-weight:600;font-size:15px}
+.demo-user-role{font-size:12px;color:var(--t2);margin-top:2px}
+.role-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.role-admin{background:rgba(124,108,252,.2);color:var(--accent)}
+.role-executor{background:rgba(74,222,128,.2);color:var(--green)}
+.role-observer{background:rgba(251,191,36,.2);color:var(--amber)}
+
+/* ── APP SHELL ── */
+#app{display:none;height:100vh;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+#app.visible{display:flex}
+
+/* ── HEADER ── */
+#app-header{height:var(--hdr);padding-top:var(--safe-t);flex-shrink:0;display:flex;align-items:center;padding:0 16px;padding-top:max(var(--safe-t),0px);background:var(--bg2);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);position:relative;z-index:100}
+.hdr-left{display:flex;align-items:center;gap:10px;flex:1}
+.hdr-logo{width:34px;height:34px;background:linear-gradient(135deg,var(--accent),var(--pink));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px}
+.hdr-title{font-weight:700;font-size:17px;letter-spacing:-.3px}
+.hdr-sub{font-size:12px;color:var(--t2);margin-top:1px}
+.hdr-actions{display:flex;align-items:center;gap:8px}
+.hdr-btn{width:38px;height:38px;border-radius:var(--r1);background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:17px;transition:var(--tr)}
+.hdr-btn:hover{background:var(--elevated);border-color:var(--border2)}
+.hdr-btn:active{transform:scale(.94)}
+.hdr-avatar{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--pink));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;cursor:pointer;overflow:hidden}
+.hdr-avatar img{width:100%;height:100%;object-fit:cover}
+
+/* ── MAIN CONTENT ── */
+#app-main{flex:1;overflow:hidden;position:relative}
+.view{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;display:none;padding-bottom:calc(var(--nav) + var(--safe-b) + 20px)}
+.view.active{display:block}
+
+/* ── BOTTOM NAV ── */
+#bottom-nav{flex-shrink:0;height:calc(var(--nav) + var(--safe-b));padding-bottom:var(--safe-b);background:var(--bg2);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding-top:4px;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;cursor:pointer;transition:var(--tr);position:relative}
+.nav-item:active{transform:scale(.92)}
+.nav-icon{font-size:22px;line-height:1;transition:var(--tr)}
+.nav-label{font-size:10px;font-weight:600;color:var(--t3);transition:var(--tr);letter-spacing:.3px}
+.nav-item.active .nav-icon{transform:scale(1.1)}
+.nav-item.active .nav-label{color:var(--accent)}
+.nav-badge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--red);color:#fff;border-radius:10px;font-size:10px;font-weight:700;padding:1px 5px;min-width:18px;text-align:center}
+
+/* ── DASHBOARD ── */
+.view-pad{padding:20px 16px 0}
+.greeting{margin-bottom:24px}
+.greeting-text{font-size:22px;font-weight:800;letter-spacing:-.5px}
+.greeting-sub{font-size:14px;color:var(--t2);margin-top:4px}
+.section-label{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--t3);margin-bottom:12px}
+.stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:14px 12px;text-align:center}
+.stat-num{font-size:28px;font-weight:800;letter-spacing:-1px}
+.stat-num.green{color:var(--green)}
+.stat-num.red{color:var(--red)}
+.stat-num.amber{color:var(--amber)}
+.stat-lbl{font-size:11px;color:var(--t2);margin-top:2px}
+.complex-cards{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.complex-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r3);overflow:hidden;cursor:pointer;transition:var(--tr);position:relative}
+.complex-card:hover{border-color:var(--border2);transform:translateY(-2px);box-shadow:var(--sh)}
+.complex-card:active{transform:scale(.98)}
+.complex-header{padding:20px;display:flex;align-items:center;gap:16px}
+.complex-icon{width:56px;height:56px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0}
+.complex-info{flex:1}
+.complex-name{font-size:18px;font-weight:700;margin-bottom:4px}
+.complex-meta{font-size:13px;color:var(--t2)}
+.complex-arrow{font-size:18px;color:var(--t3)}
+.complex-progress{padding:0 20px 20px}
+.progress-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;border-radius:4px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--t2);margin-top:6px}
+.complex-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;background:var(--card);border:1px solid var(--border)}
+.tag.ok{background:var(--green-bg);border-color:transparent;color:var(--green)}
+.tag.issue{background:var(--red-bg);border-color:transparent;color:var(--red)}
+.recent-list{display:flex;flex-direction:column;gap:10px}
+.recent-item{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:var(--tr)}
+.recent-item:hover{border-color:var(--border2)}
+.recent-icon{width:40px;height:40px;border-radius:var(--r1);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.recent-info{flex:1}
+.recent-name{font-weight:600;font-size:14px}
+.recent-meta{font-size:12px;color:var(--t2);margin-top:2px}
+.status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.status-dot.ok{background:var(--green)}
+.status-dot.issue{background:var(--red)}
+.status-dot.draft{background:var(--amber)}
+
+/* ── CHECKLIST VIEW ── */
+.checklist-header{background:var(--bg2);padding:16px;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+.cl-top{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.cl-back{width:36px;height:36px;border-radius:var(--r1);background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;transition:var(--tr);flex-shrink:0}
+.cl-back:active{transform:scale(.9)}
+.cl-title{flex:1}
+.cl-name{font-size:18px;font-weight:700}
+.cl-date{font-size:12px;color:var(--t2);margin-top:2px}
+.cl-submit-btn{padding:8px 18px;background:linear-gradient(135deg,var(--accent),#a855f7);color:#fff;border-radius:var(--r2);font-size:13px;font-weight:600;transition:var(--tr)}
+.cl-submit-btn:active{transform:scale(.96)}
+.cl-progress-wrap{display:flex;align-items:center;gap:10px}
+.cl-progress-bar{flex:1;height:6px;background:var(--border);border-radius:6px;overflow:hidden}
+.cl-progress-fill{height:100%;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:6px;transition:width .4s ease}
+.cl-progress-pct{font-size:13px;font-weight:700;color:var(--accent);min-width:36px;text-align:right}
+
+/* section group header */
+.section-group-header{padding:20px 16px 8px;display:flex;align-items:center;gap:10px}
+.sg-icon{font-size:22px}
+.sg-name{font-size:16px;font-weight:700}
+.sg-count{font-size:12px;color:var(--t2);margin-left:auto}
+.sg-status{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px}
+.sg-status.ok{background:var(--green-bg);color:var(--green)}
+.sg-status.issue{background:var(--red-bg);color:var(--red)}
+.sg-status.partial{background:var(--amber-bg);color:var(--amber)}
+
+/* section accordion */
+.section-accordion{margin:0 16px 8px;border-radius:var(--r2);overflow:hidden;border:1px solid var(--border)}
+.section-acc-header{display:flex;align-items:center;gap:10px;padding:14px 16px;cursor:pointer;background:var(--card);transition:var(--tr);user-select:none}
+.section-acc-header:active{background:var(--elevated)}
+.section-acc-emoji{font-size:18px}
+.section-acc-name{flex:1;font-weight:600;font-size:14px}
+.section-acc-prog{font-size:12px;color:var(--t2)}
+.section-acc-chevron{font-size:14px;color:var(--t3);transition:transform .25s}
+.section-accordion.open .section-acc-chevron{transform:rotate(180deg)}
+.section-acc-body{max-height:0;overflow:hidden;transition:max-height .3s cubic-bezier(.4,0,.2,1)}
+.section-accordion.open .section-acc-body{max-height:2000px}
+.section-divider{height:1px;background:var(--border);margin:0 16px}
+
+/* checklist item */
+.cl-item{background:var(--card);padding:14px 16px;border-top:1px solid var(--border);transition:var(--tr)}
+.cl-item:first-child{border-top:none}
+.cl-item-row{display:flex;align-items:center;gap:10px}
+.cl-item-text{flex:1;font-size:14px;line-height:1.4;color:var(--t1)}
+.cl-item-text.muted{color:var(--t2)}
+.cl-status-btns{display:flex;gap:6px;flex-shrink:0}
+.cl-btn{width:36px;height:36px;border-radius:var(--r1);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;transition:var(--tr);flex-shrink:0}
+.cl-btn:active{transform:scale(.88)}
+.cl-btn.ok-btn.active{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.cl-btn.issue-btn.active{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.cl-btn.na-btn.active{background:var(--gray-bg);border-color:var(--gray);color:var(--gray)}
+
+/* number input for temperature */
+.cl-num-wrap{display:flex;align-items:center;gap:8px;margin-top:8px}
+.cl-num-input{width:80px;padding:8px 12px;background:var(--elevated);border:1.5px solid var(--border);border-radius:var(--r1);font-size:16px;font-weight:600;text-align:center;outline:none;color:var(--t1)}
+.cl-num-input:focus{border-color:var(--accent)}
+.cl-num-unit{font-size:14px;color:var(--t2)}
+
+/* issue expand panel */
+.cl-issue-panel{background:var(--red-bg);border-top:1px solid rgba(248,113,113,.2);padding:12px 16px;display:none}
+.cl-item.has-issue .cl-issue-panel{display:block}
+.issue-panel-label{font-size:12px;font-weight:700;color:var(--red);margin-bottom:8px;text-transform:uppercase;letter-spacing:.5px}
+.issue-comment{width:100%;padding:10px 12px;background:var(--card);border:1.5px solid rgba(248,113,113,.3);border-radius:var(--r1);resize:none;min-height:72px;font-size:14px;outline:none;color:var(--t1)}
+.issue-comment:focus{border-color:var(--red)}
+.issue-actions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.issue-action-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:var(--r1);font-size:13px;font-weight:600;transition:var(--tr);border:1.5px solid transparent}
+.issue-action-btn:active{transform:scale(.94)}
+.btn-camera{background:var(--card);border-color:var(--border2);color:var(--t1)}
+.btn-assign{background:var(--card);border-color:var(--border2);color:var(--t1)}
+.issue-media-preview{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.media-thumb{width:72px;height:72px;border-radius:var(--r1);object-fit:cover;position:relative;overflow:hidden;flex-shrink:0}
+.media-thumb-wrap{position:relative;cursor:pointer}
+.media-thumb-del{position:absolute;top:3px;right:3px;width:18px;height:18px;background:rgba(0,0,0,.7);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;cursor:pointer}
+
+/* ── ISSUES VIEW ── */
+.issues-filters{display:flex;gap:8px;padding:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.issues-filters::-webkit-scrollbar{display:none}
+.filter-chip{flex-shrink:0;padding:7px 14px;border-radius:var(--r4);font-size:13px;font-weight:600;border:1.5px solid var(--border);background:var(--card);color:var(--t2);transition:var(--tr);cursor:pointer}
+.filter-chip.active{background:var(--accent);border-color:var(--accent);color:#fff}
+.issues-list{padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.issue-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;cursor:pointer;transition:var(--tr)}
+.issue-card:hover{border-color:var(--border2)}
+.issue-card:active{transform:scale(.98)}
+.issue-card-header{padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.issue-status-bar{width:3px;border-radius:3px;align-self:stretch;flex-shrink:0}
+.status-new .issue-status-bar{background:var(--red)}
+.status-progress .issue-status-bar{background:var(--amber)}
+.status-fixed .issue-status-bar{background:var(--green)}
+.status-verified .issue-status-bar{background:var(--accent)}
+.issue-card-body{flex:1}
+.issue-card-title{font-size:14px;font-weight:600;margin-bottom:4px}
+.issue-card-meta{font-size:12px;color:var(--t2);display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.issue-card-thumb{width:56px;height:56px;border-radius:var(--r1);object-fit:cover;flex-shrink:0}
+.issue-status-chip{padding:3px 9px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.4px}
+.chip-new{background:var(--red-bg);color:var(--red)}
+.chip-progress{background:var(--amber-bg);color:var(--amber)}
+.chip-fixed{background:var(--green-bg);color:var(--green)}
+.chip-verified{background:rgba(124,108,252,.15);color:var(--accent)}
+
+/* ── HISTORY VIEW ── */
+.history-list{padding:0 16px;display:flex;flex-direction:column;gap:10px}
+.history-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;cursor:pointer;transition:var(--tr)}
+.history-card:hover{border-color:var(--border2)}
+.history-card-top{display:flex;align-items:center;gap:14px;margin-bottom:12px}
+.history-icon{width:44px;height:44px;border-radius:var(--r1);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.history-info{flex:1}
+.history-name{font-weight:700;font-size:15px}
+.history-date{font-size:12px;color:var(--t2);margin-top:2px}
+.history-meta{display:flex;gap:8px;flex-wrap:wrap}
+
+/* ── SETTINGS PANEL ── */
+#settings-panel{position:fixed;inset:0;z-index:200;display:flex;align-items:flex-end;pointer-events:none;opacity:0;transition:opacity .3s}
+#settings-panel.open{opacity:1;pointer-events:all}
+.settings-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.settings-sheet{position:relative;width:100%;background:var(--bg2);border-radius:var(--r4) var(--r4) 0 0;padding:8px 20px 20px;max-height:85vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);padding-bottom:max(20px,var(--safe-b))}
+#settings-panel.open .settings-sheet{transform:translateY(0)}
+.sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:4px;margin:0 auto 20px}
+.settings-title{font-size:18px;font-weight:700;margin-bottom:20px}
+.settings-user{display:flex;align-items:center;gap:14px;padding:16px;background:var(--card);border-radius:var(--r2);margin-bottom:20px;border:1px solid var(--border)}
+.su-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--pink));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;overflow:hidden}
+.su-avatar img{width:100%;height:100%;object-fit:cover}
+.su-name{font-weight:700;font-size:16px}
+.su-role{font-size:12px;color:var(--t2);margin-top:3px}
+.settings-row{display:flex;align-items:center;padding:14px 0;border-bottom:1px solid var(--border)}
+.settings-row:last-child{border-bottom:none}
+.settings-row-icon{font-size:20px;margin-right:14px}
+.settings-row-label{flex:1;font-size:15px}
+.settings-row-sub{font-size:12px;color:var(--t2);margin-top:2px}
+/* Toggle */
+.toggle{width:50px;height:28px;background:var(--border2);border-radius:14px;position:relative;cursor:pointer;transition:background .25s;flex-shrink:0}
+.toggle.on{background:var(--accent)}
+.toggle::after{content:'';position:absolute;width:22px;height:22px;background:#fff;border-radius:50%;top:3px;left:3px;transition:transform .25s;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+.toggle.on::after{transform:translateX(22px)}
+
+/* ── CAMERA MODAL ── */
+#camera-modal{position:fixed;inset:0;z-index:300;background:#000;display:none;flex-direction:column}
+#camera-modal.open{display:flex}
+.cam-preview{flex:1;position:relative;overflow:hidden;background:#000}
+.cam-preview video{width:100%;height:100%;object-fit:cover}
+.cam-preview canvas{display:none}
+.cam-capture-ring{position:absolute;bottom:30px;left:50%;transform:translateX(-50%);width:70px;height:70px;border-radius:50%;border:3px solid #fff;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .1s}
+.cam-capture-ring:active{transform:translateX(-50%) scale(.9)}
+.cam-capture-inner{width:56px;height:56px;border-radius:50%;background:#fff}
+.cam-top{position:absolute;top:0;left:0;right:0;padding:max(var(--safe-t),20px) 20px 16px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent)}
+.cam-close{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;cursor:pointer}
+.cam-flip{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:circle;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;cursor:pointer}
+.cam-mode-row{position:absolute;bottom:110px;left:0;right:0;display:flex;justify-content:center;gap:16px}
+.cam-mode-btn{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;transition:var(--tr)}
+.cam-mode-btn.active{background:rgba(255,255,255,.25);color:#fff}
+.cam-file-input{display:none}
+
+/* ── ISSUE DETAIL MODAL ── */
+#issue-modal{position:fixed;inset:0;z-index:250;display:none;flex-direction:column;background:var(--bg)}
+#issue-modal.open{display:flex}
+.im-header{display:flex;align-items:center;gap:12px;padding:max(var(--safe-t),20px) 16px 16px;border-bottom:1px solid var(--border)}
+.im-back{width:36px;height:36px;border-radius:var(--r1);background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:16px;cursor:pointer;flex-shrink:0}
+.im-title{font-size:17px;font-weight:700;flex:1}
+.im-body{flex:1;overflow-y:auto;padding:20px 16px;display:flex;flex-direction:column;gap:16px;padding-bottom:max(20px,var(--safe-b))}
+.im-section{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);overflow:hidden}
+.im-section-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--t3);padding:12px 16px 8px}
+.im-field{padding:0 16px 14px}
+.im-label{font-size:12px;color:var(--t2);margin-bottom:6px}
+.im-value{font-size:14px;font-weight:500}
+.im-media-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:0 16px 16px}
+.im-media-item{aspect-ratio:1;border-radius:var(--r1);overflow:hidden;cursor:pointer;background:var(--elevated)}
+.im-media-item img,.im-media-item video{width:100%;height:100%;object-fit:cover}
+.im-status-actions{display:flex;flex-direction:column;gap:8px;padding:0 16px 16px}
+.im-action-btn{padding:14px;border-radius:var(--r2);font-size:15px;font-weight:600;text-align:center;transition:var(--tr);border:1.5px solid transparent}
+.im-action-btn:active{transform:scale(.97)}
+.btn-fix{background:var(--amber-bg);border-color:var(--amber);color:var(--amber)}
+.btn-verify{background:var(--green-bg);border-color:var(--green);color:var(--green)}
+.btn-reopen{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.assign-select{width:100%;padding:10px 12px;background:var(--elevated);border:1.5px solid var(--border);border-radius:var(--r1);font-size:14px;outline:none;color:var(--t1);appearance:none;-webkit-appearance:none}
+.assign-select:focus{border-color:var(--accent)}
+
+/* ── MEDIA VIEWER ── */
+#media-viewer{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.95);display:none;align-items:center;justify-content:center;flex-direction:column}
+#media-viewer.open{display:flex}
+.mv-close{position:absolute;top:max(var(--safe-t),20px);right:20px;width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;cursor:pointer}
+#mv-img{max-width:100%;max-height:85vh;object-fit:contain;border-radius:var(--r1)}
+#mv-vid{max-width:100%;max-height:85vh;border-radius:var(--r1)}
+
+/* ── TOAST ── */
+#toast-container{position:fixed;bottom:calc(var(--nav) + var(--safe-b) + 16px);left:50%;transform:translateX(-50%);z-index:500;display:flex;flex-direction:column-reverse;gap:8px;pointer-events:none;width:90%;max-width:340px}
+.toast{background:var(--elevated);border:1px solid var(--border2);border-radius:var(--r2);padding:12px 16px;font-size:14px;font-weight:500;display:flex;align-items:center;gap:10px;box-shadow:var(--sh);pointer-events:auto;animation:toastIn .3s cubic-bezier(.4,0,.2,1) forwards;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.toast.removing{animation:toastOut .3s ease forwards}
+.toast-icon{font-size:18px;flex-shrink:0}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+@keyframes toastOut{from{opacity:1;transform:translateY(0)}to{opacity:0;transform:translateY(10px)}}
+
+/* ── EMPTY STATE ── */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;text-align:center}
+.empty-icon{font-size:64px;margin-bottom:16px;opacity:.6}
+.empty-title{font-size:18px;font-weight:700;margin-bottom:8px}
+.empty-sub{font-size:14px;color:var(--t2);max-width:240px;line-height:1.5}
+
+/* ── FLOAT BTN ── */
+.fab{position:fixed;bottom:calc(var(--nav) + var(--safe-b) + 16px);right:20px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#a855f7);color:#fff;font-size:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px var(--glow);z-index:80;transition:var(--tr);cursor:pointer}
+.fab:active{transform:scale(.92)}
+
+/* ── ASSIGNER SHEET ── */
+#assigner-sheet{position:fixed;inset:0;z-index:280;display:flex;align-items:flex-end;pointer-events:none;opacity:0;transition:opacity .3s}
+#assigner-sheet.open{opacity:1;pointer-events:all}
+.assigner-overlay{position:absolute;inset:0;background:rgba(0,0,0,.6)}
+.assigner-panel{position:relative;width:100%;background:var(--bg2);border-radius:var(--r4) var(--r4) 0 0;padding:8px 20px;max-height:70vh;overflow-y:auto;transform:translateY(100%);transition:transform .35s cubic-bezier(.4,0,.2,1);padding-bottom:max(20px,var(--safe-b))}
+#assigner-sheet.open .assigner-panel{transform:translateY(0)}
+.assigner-title{font-size:16px;font-weight:700;margin:12px 0 16px}
+.assigner-user{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);cursor:pointer;transition:var(--tr)}
+.assigner-user:last-child{border-bottom:none}
+.assigner-user:active{opacity:.7}
+.assigner-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--pink));display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;overflow:hidden}
+.assigner-avatar img{width:100%;height:100%;object-fit:cover}
+.assigner-name{font-weight:600;font-size:14px}
+.assigner-pos{font-size:12px;color:var(--t2)}
+
+/* ── UTILS ── */
+.hidden{display:none!important}
+.spin{animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.flex{display:flex}
+.items-center{align-items:center}
+.gap-8{gap:8px}
+.mt-8{margin-top:8px}
+.mt-16{margin-top:16px}
+.fw-700{font-weight:700}
+.text-sm{font-size:13px}
+.text-xs{font-size:12px}
+.text-muted{color:var(--t2)}
+
+@media (min-width:640px){
+  .stats-row{grid-template-columns:repeat(4,1fr)}
+  .auth-content{padding:60px 40px}
+}
+</style>
+</head>
+<body>
+
+<!-- AUTH SCREEN -->
+<div id="auth-screen">
+  <div class="auth-bg">
+    <div class="auth-blob"></div>
+    <div class="auth-blob"></div>
+  </div>
+  <div id="auth-form" class="auth-content">
+    <div class="auth-logo">✓</div>
+    <div class="auth-title">CheckPro</div>
+    <div class="auth-sub">Система контроля качества комплексов</div>
+    <button class="auth-btn auth-btn-primary" onclick="App.authBitrix()">
+      <span>🔗</span> Войти через Битрикс24
+    </button>
+    <button class="auth-btn auth-btn-secondary" onclick="App.showDemoPicker()">
+      <span>🎭</span> Демо режим
+    </button>
+  </div>
+  <div id="demo-picker" class="auth-content">
+    <div class="demo-title">Выберите пользователя</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- HEADER -->
+  <header id="app-header">
+    <div class="hdr-left">
+      <div class="hdr-logo">✓</div>
+      <div>
+        <div class="hdr-title" id="hdr-complex-name">CheckPro</div>
+        <div class="hdr-sub" id="hdr-date"></div>
+      </div>
+    </div>
+    <div class="hdr-actions">
+      <button class="hdr-btn" id="btn-theme" title="Тема" onclick="App.toggleTheme()">🌙</button>
+      <div class="hdr-avatar" id="hdr-avatar" onclick="App.openSettings()"></div>
+    </div>
+  </header>
+
+  <!-- MAIN -->
+  <main id="app-main">
+    <!-- DASHBOARD -->
+    <div id="view-dashboard" class="view active">
+      <div class="view-pad">
+        <div class="greeting">
+          <div class="greeting-text" id="greeting-text">Добрый день!</div>
+          <div class="greeting-sub" id="greeting-sub">Выберите комплекс для проверки</div>
+        </div>
+        <div class="stats-row" id="stats-row"></div>
+        <div class="section-label">Комплексы</div>
+        <div class="complex-cards" id="complex-cards"></div>
+        <div class="section-label" style="margin-top:24px">Последние чеклисты</div>
+        <div class="recent-list" id="recent-list"></div>
+      </div>
+    </div>
+
+    <!-- CHECKLIST -->
+    <div id="view-checklist" class="view">
+      <div class="checklist-header">
+        <div class="cl-top">
+          <button class="cl-back" onclick="App.goBack()">←</button>
+          <div class="cl-title">
+            <div class="cl-name" id="cl-complex-name"></div>
+            <div class="cl-date" id="cl-date-display"></div>
+          </div>
+          <button class="cl-submit-btn" onclick="App.submitChecklist()">Сдать</button>
+        </div>
+        <div class="cl-progress-wrap">
+          <div class="cl-progress-bar"><div class="cl-progress-fill" id="cl-progress-fill" style="width:0%"></div></div>
+          <div class="cl-progress-pct" id="cl-progress-pct">0%</div>
+        </div>
+      </div>
+      <div id="cl-body"></div>
+    </div>
+
+    <!-- ISSUES -->
+    <div id="view-issues" class="view">
+      <div class="issues-filters" id="issues-filters">
+        <div class="filter-chip active" data-filter="all">Все</div>
+        <div class="filter-chip" data-filter="new">Новые</div>
+        <div class="filter-chip" data-filter="progress">В работе</div>
+        <div class="filter-chip" data-filter="fixed">Исправлены</div>
+        <div class="filter-chip" data-filter="verified">Проверены</div>
+      </div>
+      <div class="issues-list" id="issues-list"></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="view-history" class="view">
+      <div class="view-pad" style="padding-bottom:0">
+        <div class="greeting">
+          <div class="greeting-text" style="font-size:20px">История проверок</div>
+          <div class="greeting-sub" id="history-sub">Все завершённые чеклисты</div>
+        </div>
+      </div>
+      <div class="history-list" id="history-list" style="padding-top:16px"></div>
+    </div>
+  </main>
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottom-nav">
+    <div class="nav-item active" data-view="dashboard" onclick="App.navigate('dashboard')">
+      <div class="nav-icon">🏠</div>
+      <div class="nav-label">Главная</div>
+    </div>
+    <div class="nav-item" data-view="checklist" onclick="App.navigate('checklist')">
+      <div class="nav-icon">✅</div>
+      <div class="nav-label">Чеклист</div>
+    </div>
+    <div class="nav-item" data-view="issues" onclick="App.navigate('issues')">
+      <div class="nav-icon">⚠️</div>
+      <div class="nav-label">Проблемы</div>
+      <div class="nav-badge hidden" id="issues-badge">0</div>
+    </div>
+    <div class="nav-item" data-view="history" onclick="App.navigate('history')">
+      <div class="nav-icon">📋</div>
+      <div class="nav-label">История</div>
+    </div>
+  </nav>
+</div>
+
+<!-- SETTINGS PANEL -->
+<div id="settings-panel">
+  <div class="settings-overlay" onclick="App.closeSettings()"></div>
+  <div class="settings-sheet">
+    <div class="sheet-handle"></div>
+    <div class="settings-title">Настройки</div>
+    <div class="settings-user" id="settings-user"></div>
+    <div class="settings-row">
+      <span class="settings-row-icon">🌙</span>
+      <div>
+        <div class="settings-row-label">Тёмная тема</div>
+        <div class="settings-row-sub">Переключить оформление</div>
+      </div>
+      <div class="toggle" id="theme-toggle" onclick="App.toggleTheme()"></div>
+    </div>
+    <div class="settings-row">
+      <span class="settings-row-icon">📱</span>
+      <div>
+        <div class="settings-row-label">Уведомления</div>
+        <div class="settings-row-sub">Push-уведомления о задачах</div>
+      </div>
+      <div class="toggle" id="notif-toggle" onclick="App.toggleNotifications()"></div>
+    </div>
+    <div class="settings-row" onclick="App.exportData()" style="cursor:pointer">
+      <span class="settings-row-icon">📤</span>
+      <div>
+        <div class="settings-row-label">Экспорт данных</div>
+        <div class="settings-row-sub">Скачать чеклисты в JSON</div>
+      </div>
+    </div>
+    <div class="settings-row" onclick="App.logout()" style="cursor:pointer">
+      <span class="settings-row-icon">🚪</span>
+      <div>
+        <div class="settings-row-label" style="color:var(--red)">Выйти</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CAMERA MODAL -->
+<div id="camera-modal">
+  <div class="cam-preview">
+    <video id="cam-video" autoplay playsinline muted></video>
+    <canvas id="cam-canvas"></canvas>
+    <div class="cam-top">
+      <div class="cam-close" onclick="Camera.close()">✕</div>
+      <div class="cam-flip" onclick="Camera.flip()">🔄</div>
+    </div>
+    <div class="cam-mode-row">
+      <div class="cam-mode-btn active" data-mode="photo" onclick="Camera.setMode('photo')">Фото</div>
+      <div class="cam-mode-btn" data-mode="video" onclick="Camera.setMode('video')">Видео</div>
+    </div>
+    <div class="cam-capture-ring" onclick="Camera.capture()">
+      <div class="cam-capture-inner" id="cam-capture-inner"></div>
+    </div>
+  </div>
+  <input type="file" class="cam-file-input" id="cam-file-input" accept="image/*,video/*" capture="environment">
+</div>
+
+<!-- ISSUE DETAIL MODAL -->
+<div id="issue-modal">
+  <div class="im-header">
+    <button class="im-back" onclick="IssueModal.close()">←</button>
+    <div class="im-title" id="im-title">Проблема</div>
+    <div class="issue-status-chip" id="im-status-chip"></div>
+  </div>
+  <div class="im-body" id="im-body"></div>
+</div>
+
+<!-- MEDIA VIEWER -->
+<div id="media-viewer" onclick="MediaViewer.close()">
+  <div class="mv-close">✕</div>
+  <img id="mv-img" style="display:none">
+  <video id="mv-vid" controls style="display:none"></video>
+</div>
+
+<!-- ASSIGNER SHEET -->
+<div id="assigner-sheet">
+  <div class="assigner-overlay" onclick="Assigner.close()"></div>
+  <div class="assigner-panel">
+    <div class="sheet-handle"></div>
+    <div class="assigner-title">Назначить исполнителя</div>
+    <div id="assigner-list"></div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toast-container"></div>
+
+<script>
+// ============================================================
+//  CHECKLIST DATA
+// ============================================================
+function mkLR(num, hasBath = true, suffix = '') {
+  const n = `Раздевалка №${num}${suffix}`;
+  const r = [];
+  if (hasBath) {
+    r.push({ id:`lr${num}${suffix}_sh`, section:'Душ', parent:n, emoji:'🚿', items:[
+      {id:'floor',  text:'Пол чистый'},
+      {id:'smell',  text:'Неприятный запах (отсутствует)'},
+      {id:'heads',  text:'Лейки (исправны)'},
+      {id:'curtain',text:'Шторки чистые'},
+    ]});
+    r.push({ id:`lr${num}${suffix}_wc`, section:'Туалет', parent:n, emoji:'🚽', items:[
+      {id:'floor', text:'Чистый пол'},
+      {id:'doors', text:'Чистые двери'},
+      {id:'walls', text:'Чистые стены'},
+      {id:'toilet',text:'Чистые унитазы'},
+      {id:'tp',    text:'ТБ в наличии'},
+      {id:'soap',  text:'Мыло в наличии'},
+      {id:'trash', text:'Урны чистые/пустые'},
+    ]});
+  }
+  r.push({ id:`lr${num}${suffix}_cm`, section:'Общее помещение', parent:n, emoji:'👔', items:[
+    {id:'benches',text:'Лавки целые'},
+    {id:'floor',  text:'Пол чистый'},
+    {id:'hooks',  text:'Все крючки на месте'},
+    {id:'trash',  text:'Урна чистая/пустая'},
+  ]});
+  return r;
+}
+
+const ENTRANCE = [
+  {id:'entrance', section:'Входная группа', parent:null, emoji:'🚪', items:[
+    {id:'corridor',text:'Коридор (пол подметен/помыт)'},
+    {id:'trash',   text:'Урна чистая'},
+  ]}
+];
+const COMMON_WC = [
+  {id:'common_wc', section:'Общий туалет', parent:null, emoji:'🚻', items:[
+    {id:'floor', text:'Чистый пол'},
+    {id:'doors', text:'Чистые двери'},
+    {id:'walls', text:'Чистые стены'},
+    {id:'toilet',text:'Чистые унитазы'},
+    {id:'tp',    text:'ТБ в наличии'},
+    {id:'soap',  text:'Мыло в наличии'},
+    {id:'trash', text:'Урны чистые/пустые'},
+  ]}
+];
+const ICE = [
+  {id:'ice', section:'Лед', parent:null, emoji:'🏒', items:[
+    {id:'music', text:'Играет музыка'},
+    {id:'stands',text:'Трибуны чистые'},
+    {id:'glass', text:'Стекла чистые'},
+    {id:'temp',  text:'Температура', type:'number', unit:'°C'},
+    {id:'area',  text:'Территория вокруг льда чистая'},
+  ]}
+];
+const ARENA = [
+  {id:'arena', section:'Манеж', parent:null, emoji:'🏟️', items:[
+    {id:'temp',       text:'Температура', type:'number', unit:'°C'},
+    {id:'trash',      text:'Урны чистые/пустые'},
+    {id:'benches',    text:'Скамейки стоят ровно'},
+    {id:'inventory',  text:'Инвентарь убран'},
+    {id:'boxes',      text:'Инвентарные ящики закрыты'},
+    {id:'nets_safe',  text:'Защитные сетки целые'},
+    {id:'nets_goal',  text:'Сетки на воротах целые'},
+    {id:'under_bench',text:'Под скамейками нет мусора'},
+  ]}
+];
+const GYM = (id, label) => [{id, section:label, parent:null, emoji:'🏋️', items:[
+  {id:'floor',    text:'Пол чистый'},
+  {id:'mirrors',  text:'Зеркала чистые, без разводов'},
+  {id:'inventory',text:'Инвентарь убран'},
+]}];
+const GYM_EX = (id, label) => [{id, section:label, parent:null, emoji:'🏋️', items:[
+  {id:'floor',    text:'Пол чистый'},
+  {id:'mirrors',  text:'Зеркала чистые, без разводов'},
+  {id:'boxes',    text:'Инвентарные ящики закрыты'},
+  {id:'inventory',text:'Инвентарь убран'},
+]}];
+const CAFE = [{id:'cafe', section:'Кафе', parent:null, emoji:'☕', items:[
+  {id:'floor', text:'Пол чистый'},
+  {id:'sofas', text:'Диваны чистые'},
+]}];
+const MARTIAL = [{id:'martial', section:'Единоборства (резина)', parent:null, emoji:'🥊', items:[
+  {id:'floor',    text:'Пол чистый'},
+  {id:'inventory',text:'Инвентарь убран'},
+]}];
+const FOOTBALL = [{id:'football', section:'Футбольное поле', parent:null, emoji:'⚽', items:[
+  {id:'temp',       text:'Температура', type:'number', unit:'°C'},
+  {id:'trash',      text:'Урны чистые/пустые'},
+  {id:'inventory',  text:'Инвентарь убран'},
+  {id:'boxes',      text:'Инвентарные ящики закрыты'},
+  {id:'nets_safe',  text:'Защитные сетки целые'},
+  {id:'nets_goal',  text:'Сетки на воротах целые'},
+  {id:'under_bench',text:'Под скамейками нет мусора'},
+]}];
+const FOOTBALL_MINI = [{id:'football_mini', section:'Футбольное поле мини', parent:null, emoji:'⚽', items:[
+  {id:'net_goal',   text:'Сетка на воротах целая'},
+  {id:'inventory',  text:'Инвентарь убран'},
+]}];
+
+const CHECKLIST_DATA = {
+  ostrov: [
+    ...ENTRANCE, ...COMMON_WC,
+    ...mkLR(1),
+    {id:'lr1a_cm', section:'Общее помещение', parent:'Раздевалка №1А', emoji:'👔', items:[
+      {id:'benches',text:'Лавки целые'},{id:'hooks',text:'Все крючки на месте'},
+      {id:'floor',text:'Пол чистый'},{id:'trash',text:'Урна чистая/пустая'},
+    ]},
+    ...mkLR(2), ...mkLR(3), ...mkLR(4), ...mkLR(5),
+    ...ICE, ...ARENA, ...MARTIAL,
+    ...GYM('gym','ОФП/Хореография'),
+    ...CAFE,
+  ],
+  yurlovskiy: [
+    ...ENTRANCE, ...COMMON_WC,
+    ...mkLR(1), ...mkLR(2), ...mkLR(3), ...mkLR(4),
+    ...ICE, ...FOOTBALL, ...FOOTBALL_MINI,
+    ...GYM_EX('gym1','ОФП/Хореография'),
+    ...GYM_EX('gym2','ОФП/Хореография (3 стр.)'),
+    ...CAFE,
+  ],
+  mayak: [
+    ...ENTRANCE, ...COMMON_WC,
+    ...mkLR(1), ...mkLR(2), ...mkLR(3), ...mkLR(4), ...mkLR(5), ...mkLR(6), ...mkLR(8),
+    ...ICE, ...ARENA,
+    ...GYM('gym1','ОФП/Хореография'),
+    ...GYM('gym2','ОФП/Хореография (2)'),
+    ...CAFE,
+  ],
+};
+
+const COMPLEXES = [
+  {id:'ostrov',     name:'Остров',     emoji:'🏔️', grad:'linear-gradient(135deg,#7c6cfc,#a855f7)'},
+  {id:'yurlovskiy', name:'Юрловский',  emoji:'🏟️', grad:'linear-gradient(135deg,#f093fb,#f5576c)'},
+  {id:'mayak',      name:'Маяк',       emoji:'🗼', grad:'linear-gradient(135deg,#4facfe,#00f2fe)'},
+];
+
+const DEMO_USERS = [
+  {id:'1', name:'Иван Петров',    role:'admin',    emoji:'👨‍💼', position:'Администратор'},
+  {id:'2', name:'Мария Сидорова', role:'executor', emoji:'👷‍♀️', position:'Исполнитель'},
+  {id:'3', name:'Алексей Козлов', role:'observer', emoji:'👁️',  position:'Наблюдатель'},
+  {id:'4', name:'Елена Захарова', role:'executor', emoji:'👷',  position:'Исполнитель'},
+];
+
+const ROLE_LABELS = {admin:'Администратор', executor:'Исполнитель', observer:'Наблюдатель'};
+
+// ============================================================
+//  IndexedDB
+// ============================================================
+const DB = (() => {
+  let db;
+  const NAME = 'checkpro', VER = 1;
+  async function open() {
+    if (db) return db;
+    return new Promise((res, rej) => {
+      const req = indexedDB.open(NAME, VER);
+      req.onupgradeneeded = e => {
+        const d = e.target.result;
+        if (!d.objectStoreNames.contains('checklists')) d.createObjectStore('checklists', {keyPath:'id'});
+        if (!d.objectStoreNames.contains('issues'))     d.createObjectStore('issues',     {keyPath:'id'});
+        if (!d.objectStoreNames.contains('media'))      d.createObjectStore('media',       {keyPath:'id'});
+      };
+      req.onsuccess = e => { db = e.target.result; res(db); };
+      req.onerror   = e => rej(e);
+    });
+  }
+  async function all(store) {
+    const d = await open();
+    return new Promise((res, rej) => {
+      const tx = d.transaction(store, 'readonly');
+      const req = tx.objectStore(store).getAll();
+      req.onsuccess = e => res(e.target.result);
+      req.onerror   = e => rej(e);
+    });
+  }
+  async function get(store, id) {
+    const d = await open();
+    return new Promise((res, rej) => {
+      const tx = d.transaction(store, 'readonly');
+      const req = tx.objectStore(store).get(id);
+      req.onsuccess = e => res(e.target.result);
+      req.onerror   = e => rej(e);
+    });
+  }
+  async function put(store, obj) {
+    const d = await open();
+    return new Promise((res, rej) => {
+      const tx = d.transaction(store, 'readwrite');
+      const req = tx.objectStore(store).put(obj);
+      req.onsuccess = e => res(e.target.result);
+      req.onerror   = e => rej(e);
+    });
+  }
+  async function del(store, id) {
+    const d = await open();
+    return new Promise((res, rej) => {
+      const tx = d.transaction(store, 'readwrite');
+      const req = tx.objectStore(store).delete(id);
+      req.onsuccess = e => res();
+      req.onerror   = e => rej(e);
+    });
+  }
+  return {all, get, put, del};
+})();
+
+// ============================================================
+//  MEDIA COMPRESSION
+// ============================================================
+async function compressImage(file) {
+  return new Promise(res => {
+    const img = new Image();
+    img.onload = () => {
+      const MAX = 1280;
+      let w = img.width, h = img.height;
+      if (w > MAX || h > MAX) {
+        if (w > h) { h = h * MAX / w; w = MAX; }
+        else       { w = w * MAX / h; h = MAX; }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = Math.round(w); canvas.height = Math.round(h);
+      canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+      res(canvas.toDataURL('image/jpeg', 0.72));
+    };
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+function genId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+}
+
+function fmtDate(d = new Date()) {
+  return d.toLocaleDateString('ru-RU', {day:'2-digit', month:'long', year:'numeric'});
+}
+function fmtTime(d = new Date()) {
+  return d.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+}
+function todayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// ============================================================
+//  STATE
+// ============================================================
+const State = {
+  user: null,
+  theme: 'dark',
+  activeComplex: null,
+  activeDraft: null,   // current draft checklist being filled
+  issues: [],
+  checklists: [],
+  users: [...DEMO_USERS],
+
+  async load() {
+    this.theme = localStorage.getItem('cp_theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', this.theme);
+    this.checklists = await DB.all('checklists');
+    this.issues     = await DB.all('issues');
+  },
+
+  async saveDraft() {
+    if (!this.activeDraft) return;
+    await DB.put('checklists', this.activeDraft);
+    const idx = this.checklists.findIndex(c => c.id === this.activeDraft.id);
+    if (idx >= 0) this.checklists[idx] = this.activeDraft;
+    else this.checklists.push(this.activeDraft);
+  },
+
+  async saveIssue(issue) {
+    await DB.put('issues', issue);
+    const idx = this.issues.findIndex(i => i.id === issue.id);
+    if (idx >= 0) this.issues[idx] = issue;
+    else this.issues.push(issue);
+  },
+};
+
+// ============================================================
+//  CAMERA
+// ============================================================
+const Camera = (() => {
+  let stream = null, facingMode = 'environment', mode = 'photo';
+  let recorder = null, chunks = [];
+  let onCapture = null;
+  let recording = false;
+
+  async function open(cb) {
+    onCapture = cb;
+    const modal = document.getElementById('camera-modal');
+    // Try native camera first on iOS
+    if (/iPhone|iPad/i.test(navigator.userAgent)) {
+      const inp = document.getElementById('cam-file-input');
+      inp.accept = 'image/*,video/*';
+      inp.onchange = async e => {
+        const file = e.target.files[0];
+        if (!file) return;
+        let data;
+        if (file.type.startsWith('image/')) {
+          data = await compressImage(file);
+          onCapture({type:'image', data, mime:'image/jpeg'});
+        } else {
+          const reader = new FileReader();
+          reader.onload = ev => onCapture({type:'video', data:ev.target.result, mime:file.type});
+          reader.readAsDataURL(file);
+        }
+        inp.value = '';
+      };
+      inp.click();
+      return;
+    }
+    modal.classList.add('open');
+    await startStream();
+  }
+
+  async function startStream() {
+    if (stream) { stream.getTracks().forEach(t => t.stop()); }
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({video:{facingMode}, audio: mode === 'video'});
+      document.getElementById('cam-video').srcObject = stream;
+    } catch(e) {
+      Toast.show('Нет доступа к камере. Используйте загрузку файла.', '⚠️');
+      fallbackFile();
+    }
+  }
+
+  function fallbackFile() {
+    close();
+    const inp = document.getElementById('cam-file-input');
+    inp.click();
+  }
+
+  function close() {
+    if (stream) { stream.getTracks().forEach(t => t.stop()); stream = null; }
+    if (recorder && recording) { recorder.stop(); }
+    document.getElementById('camera-modal').classList.remove('open');
+  }
+
+  function flip() {
+    facingMode = facingMode === 'environment' ? 'user' : 'environment';
+    startStream();
+  }
+
+  function setMode(m) {
+    mode = m;
+    document.querySelectorAll('.cam-mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === m));
+    const inner = document.getElementById('cam-capture-inner');
+    inner.style.background = m === 'video' ? '#f87171' : '#fff';
+  }
+
+  async function capture() {
+    if (mode === 'photo') {
+      const video = document.getElementById('cam-video');
+      const canvas = document.getElementById('cam-canvas');
+      canvas.width  = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext('2d').drawImage(video, 0, 0);
+      const data = canvas.toDataURL('image/jpeg', 0.72);
+      close();
+      onCapture && onCapture({type:'image', data, mime:'image/jpeg'});
+    } else {
+      if (!recording) {
+        chunks = [];
+        recorder = new MediaRecorder(stream, {mimeType: 'video/webm;codecs=vp8', videoBitsPerSecond:800000});
+        recorder.ondataavailable = e => chunks.push(e.data);
+        recorder.onstop = () => {
+          const blob = new Blob(chunks, {type:'video/webm'});
+          const reader = new FileReader();
+          reader.onload = ev => {
+            onCapture && onCapture({type:'video', data:ev.target.result, mime:'video/webm'});
+          };
+          reader.readAsDataURL(blob);
+        };
+        recorder.start();
+        recording = true;
+        document.getElementById('cam-capture-inner').style.background = '#ff6b9d';
+        Toast.show('Идёт запись...', '🔴');
+      } else {
+        recorder.stop();
+        recording = false;
+        close();
+      }
+    }
+  }
+
+  return {open, close, flip, setMode, capture};
+})();
+
+// ============================================================
+//  TOAST
+// ============================================================
+const Toast = {
+  show(msg, icon = 'ℹ️', dur = 3000) {
+    const container = document.getElementById('toast-container');
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = `<span class="toast-icon">${icon}</span><span>${msg}</span>`;
+    container.appendChild(el);
+    setTimeout(() => {
+      el.classList.add('removing');
+      el.addEventListener('animationend', () => el.remove());
+    }, dur);
+  }
+};
+
+// ============================================================
+//  MEDIA VIEWER
+// ============================================================
+const MediaViewer = {
+  open(data, type) {
+    const el = document.getElementById('media-viewer');
+    const img = document.getElementById('mv-img');
+    const vid = document.getElementById('mv-vid');
+    if (type === 'image') { img.src = data; img.style.display='block'; vid.style.display='none'; vid.src=''; }
+    else { vid.src = data; vid.style.display='block'; img.style.display='none'; img.src=''; }
+    el.classList.add('open');
+  },
+  close() {
+    document.getElementById('media-viewer').classList.remove('open');
+    document.getElementById('mv-vid').src = '';
+    document.getElementById('mv-img').src = '';
+  }
+};
+
+// ============================================================
+//  ASSIGNER SHEET
+// ============================================================
+const Assigner = {
+  _cb: null,
+  open(cb) {
+    this._cb = cb;
+    const list = document.getElementById('assigner-list');
+    list.innerHTML = '';
+    const executors = State.users.filter(u => u.role !== 'observer');
+    executors.forEach(u => {
+      const el = document.createElement('div');
+      el.className = 'assigner-user';
+      el.innerHTML = `
+        <div class="assigner-avatar">${u.photo ? `<img src="${u.photo}">` : u.emoji}</div>
+        <div>
+          <div class="assigner-name">${u.name}</div>
+          <div class="assigner-pos">${u.position}</div>
+        </div>
+      `;
+      el.onclick = () => { this._cb && this._cb(u); this.close(); };
+      list.appendChild(el);
+    });
+    document.getElementById('assigner-sheet').classList.add('open');
+  },
+  close() { document.getElementById('assigner-sheet').classList.remove('open'); }
+};
+
+// ============================================================
+//  ISSUE MODAL
+// ============================================================
+const IssueModal = {
+  currentIssue: null,
+  open(issueId) {
+    const issue = State.issues.find(i => i.id === issueId);
+    if (!issue) return;
+    this.currentIssue = issue;
+    document.getElementById('im-title').textContent = issue.itemText;
+    const chip = document.getElementById('im-status-chip');
+    const statusMap = {new:{cls:'chip-new',label:'Новая'}, progress:{cls:'chip-progress',label:'В работе'}, fixed:{cls:'chip-fixed',label:'Исправлена'}, verified:{cls:'chip-verified',label:'Проверена'}};
+    const s = statusMap[issue.status] || statusMap.new;
+    chip.className = 'issue-status-chip ' + s.cls;
+    chip.textContent = s.label;
+    this._renderBody(issue);
+    document.getElementById('issue-modal').classList.add('open');
+  },
+  _renderBody(issue) {
+    const complex = COMPLEXES.find(c => c.id === issue.complexId);
+    const body = document.getElementById('im-body');
+    const canManage = State.user && (State.user.role === 'admin');
+    const isExecutor = State.user && (State.user.role === 'executor' && issue.assignedTo?.id === State.user.id);
+
+    let mediaHtml = '';
+    if (issue.mediaIds && issue.mediaIds.length) {
+      mediaHtml = `<div class="im-section-title">📸 Медиа</div><div class="im-media-grid" id="im-media-grid"></div>`;
+    }
+
+    let fixMediaHtml = '';
+    if (issue.fixMediaIds && issue.fixMediaIds.length) {
+      fixMediaHtml = `<div class="im-section-title">✅ Фото исправления</div><div class="im-media-grid" id="im-fix-media-grid"></div>`;
+    }
+
+    let actionsHtml = '';
+    if (canManage && issue.status === 'fixed') {
+      actionsHtml = `<button class="im-action-btn btn-verify" onclick="IssueModal.verify()">✅ Подтвердить исправление</button>
+                     <button class="im-action-btn btn-reopen" onclick="IssueModal.reopen()">↩️ Вернуть в работу</button>`;
+    } else if ((canManage || isExecutor) && (issue.status === 'new' || issue.status === 'progress')) {
+      actionsHtml = `<button class="im-action-btn btn-fix" onclick="IssueModal.markFixed()">🛠️ Отметить исправленным</button>`;
+    }
+
+    body.innerHTML = `
+      <div class="im-section">
+        <div class="im-section-title">ℹ️ Информация</div>
+        <div class="im-field"><div class="im-label">Комплекс</div><div class="im-value">${complex?.emoji || ''} ${complex?.name || issue.complexId}</div></div>
+        <div class="im-field"><div class="im-label">Раздел</div><div class="im-value">${issue.sectionName}</div></div>
+        <div class="im-field"><div class="im-label">Дата обнаружения</div><div class="im-value">${fmtDate(new Date(issue.createdAt))} ${fmtTime(new Date(issue.createdAt))}</div></div>
+        <div class="im-field"><div class="im-label">Обнаружил</div><div class="im-value">${issue.createdBy?.name || '—'}</div></div>
+        ${issue.comment ? `<div class="im-field"><div class="im-label">Комментарий</div><div class="im-value">${issue.comment}</div></div>` : ''}
+      </div>
+      ${issue.mediaIds?.length ? `<div class="im-section">${mediaHtml}</div>` : ''}
+      <div class="im-section">
+        <div class="im-section-title">👤 Ответственный</div>
+        <div class="im-field">
+          <div class="im-value">${issue.assignedTo ? issue.assignedTo.name : 'Не назначен'}</div>
+          ${canManage ? `<button style="margin-top:8px;padding:8px 16px;background:var(--card);border:1px solid var(--border2);border-radius:var(--r1);font-size:13px;cursor:pointer;color:var(--t1)" onclick="IssueModal.reassign()">Изменить</button>` : ''}
+        </div>
+      </div>
+      ${issue.fixMediaIds?.length ? `<div class="im-section">${fixMediaHtml}</div>` : ''}
+      ${actionsHtml ? `<div class="im-section"><div class="im-section-title">⚡ Действия</div><div class="im-status-actions">${actionsHtml}</div></div>` : ''}
+    `;
+
+    // Load media async
+    if (issue.mediaIds?.length) this._loadMedia(issue.mediaIds, 'im-media-grid', false);
+    if (issue.fixMediaIds?.length) this._loadMedia(issue.fixMediaIds, 'im-fix-media-grid', false);
+  },
+  async _loadMedia(ids, gridId, editable) {
+    const grid = document.getElementById(gridId);
+    if (!grid) return;
+    for (const mid of ids) {
+      const m = await DB.get('media', mid);
+      if (!m) continue;
+      const el = document.createElement('div');
+      el.className = 'im-media-item';
+      if (m.type === 'image') {
+        el.innerHTML = `<img src="${m.data}" loading="lazy">`;
+        el.onclick = () => MediaViewer.open(m.data, 'image');
+      } else {
+        el.innerHTML = `<video src="${m.data}" style="width:100%;height:100%;object-fit:cover"></video>`;
+        el.onclick = () => MediaViewer.open(m.data, 'video');
+      }
+      grid.appendChild(el);
+    }
+  },
+  async markFixed() {
+    const issue = this.currentIssue;
+    Camera.open(async cap => {
+      const mid = genId();
+      await DB.put('media', {id:mid, type:cap.type, data:cap.data, mime:cap.mime});
+      issue.fixMediaIds = [...(issue.fixMediaIds || []), mid];
+      issue.status = 'fixed';
+      issue.fixedAt = Date.now();
+      await State.saveIssue(issue);
+      Toast.show('Отмечено как исправленное!', '✅');
+      this._renderBody(issue);
+      document.getElementById('im-status-chip').className = 'issue-status-chip chip-fixed';
+      document.getElementById('im-status-chip').textContent = 'Исправлена';
+      App.refreshIssuesBadge();
+    });
+  },
+  async verify() {
+    const issue = this.currentIssue;
+    issue.status = 'verified';
+    issue.verifiedAt = Date.now();
+    issue.verifiedBy = State.user;
+    await State.saveIssue(issue);
+    Toast.show('Исправление подтверждено!', '✅');
+    this._renderBody(issue);
+    document.getElementById('im-status-chip').className = 'issue-status-chip chip-verified';
+    document.getElementById('im-status-chip').textContent = 'Проверена';
+    App.refreshIssuesBadge();
+  },
+  async reopen() {
+    const issue = this.currentIssue;
+    issue.status = 'progress';
+    await State.saveIssue(issue);
+    Toast.show('Проблема возвращена в работу', '↩️');
+    this._renderBody(issue);
+    App.refreshIssuesBadge();
+  },
+  reassign() {
+    Assigner.open(user => {
+      const issue = this.currentIssue;
+      issue.assignedTo = {id:user.id, name:user.name};
+      issue.status = 'progress';
+      State.saveIssue(issue).then(() => {
+        Toast.show(`Назначено: ${user.name}`, '👤');
+        this._renderBody(issue);
+      });
+    });
+  },
+  close() {
+    document.getElementById('issue-modal').classList.remove('open');
+    this.currentIssue = null;
+    App.renderIssues();
+  }
+};
+
+// ============================================================
+//  CHECKLIST MODULE
+// ============================================================
+const Checklist = {
+  sections: [],
+  draft: null,
+
+  start(complexId) {
+    const existing = State.checklists.find(c => c.complexId === complexId && c.status === 'draft' && c.date === todayKey());
+    if (existing) {
+      this.draft = existing;
+    } else {
+      this.draft = {
+        id: genId(),
+        complexId,
+        date: todayKey(),
+        createdAt: Date.now(),
+        createdBy: State.user,
+        status: 'draft',
+        items: {},
+      };
+    }
+    State.activeDraft = this.draft;
+    this.sections = CHECKLIST_DATA[complexId] || [];
+    this._render();
+    App.navigate('checklist');
+  },
+
+  _render() {
+    const complex = COMPLEXES.find(c => c.id === this.draft.complexId);
+    document.getElementById('cl-complex-name').textContent = complex?.name || '';
+    document.getElementById('cl-date-display').textContent = fmtDate();
+
+    const body = document.getElementById('cl-body');
+    body.innerHTML = '';
+    const sections = this.sections;
+
+    // Group by parent
+    const groups = [];
+    const parentMap = {};
+    sections.forEach(sec => {
+      const key = sec.parent || '__root__' + sec.id;
+      if (!parentMap[key]) { parentMap[key] = {name: sec.parent, sections:[]}; groups.push(parentMap[key]); }
+      parentMap[key].sections.push(sec);
+    });
+
+    groups.forEach(group => {
+      if (group.name) {
+        const gh = document.createElement('div');
+        gh.className = 'section-group-header';
+        const totalItems = group.sections.reduce((s,sec) => s + sec.items.length, 0);
+        const checkedItems = group.sections.reduce((s,sec) => s + sec.items.filter(it => {
+          const key = `${sec.id}_${it.id}`;
+          return this.draft.items[key] && this.draft.items[key].status !== 'unchecked';
+        }).length, 0);
+        gh.innerHTML = `<span class="sg-icon">${group.sections[0].emoji}</span>
+          <span class="sg-name">${group.name}</span>
+          <span class="sg-count">${checkedItems}/${totalItems}</span>`;
+        body.appendChild(gh);
+      }
+      group.sections.forEach(sec => this._renderSection(body, sec));
+    });
+
+    this._updateProgress();
+  },
+
+  _renderSection(container, sec) {
+    const acc = document.createElement('div');
+    acc.className = 'section-accordion';
+    acc.id = 'acc_' + sec.id;
+
+    const checkedCount = sec.items.filter(it => {
+      const v = this.draft.items[`${sec.id}_${it.id}`];
+      return v && v.status !== 'unchecked';
+    }).length;
+    const isOpen = checkedCount < sec.items.length;
+    if (isOpen) acc.classList.add('open');
+
+    acc.innerHTML = `
+      <div class="section-acc-header" onclick="Checklist.toggleSection('${sec.id}')">
+        <span class="section-acc-emoji">${sec.emoji}</span>
+        <span class="section-acc-name">${sec.section}</span>
+        <span class="section-acc-prog">${checkedCount}/${sec.items.length}</span>
+        <span class="section-acc-chevron">▼</span>
+      </div>
+      <div class="section-acc-body" id="secbody_${sec.id}"></div>
+    `;
+
+    const body = acc.querySelector('.section-acc-body');
+    sec.items.forEach(item => this._renderItem(body, sec, item));
+    container.appendChild(acc);
+  },
+
+  _renderItem(container, sec, item) {
+    const key = `${sec.id}_${item.id}`;
+    const state = this.draft.items[key] || {status:'unchecked', comment:'', mediaIds:[], value:null};
+    const hasIssue = state.status === 'issue';
+
+    const el = document.createElement('div');
+    el.className = 'cl-item' + (hasIssue ? ' has-issue' : '');
+    el.id = `item_${key}`;
+
+    if (item.type === 'number') {
+      el.innerHTML = `
+        <div class="cl-item-row">
+          <span class="cl-item-text">${item.text}</span>
+        </div>
+        <div class="cl-num-wrap">
+          <input class="cl-num-input" type="number" step="0.1" placeholder="—"
+            value="${state.value ?? ''}"
+            onchange="Checklist.setNum('${sec.id}','${item.id}',this.value)">
+          <span class="cl-num-unit">${item.unit || ''}</span>
+        </div>
+      `;
+    } else {
+      const okAct  = state.status === 'ok'      ? ' active' : '';
+      const issAct = state.status === 'issue'   ? ' active' : '';
+      const naAct  = state.status === 'na'      ? ' active' : '';
+      el.innerHTML = `
+        <div class="cl-item-row">
+          <span class="cl-item-text">${item.text}</span>
+          <div class="cl-status-btns">
+            <button class="cl-btn ok-btn${okAct}"   title="OK"     onclick="Checklist.setStatus('${sec.id}','${item.id}','ok')">✓</button>
+            <button class="cl-btn issue-btn${issAct}" title="Проблема" onclick="Checklist.setStatus('${sec.id}','${item.id}','issue')">✗</button>
+            <button class="cl-btn na-btn${naAct}"   title="Н/П"    onclick="Checklist.setStatus('${sec.id}','${item.id}','na')">—</button>
+          </div>
+        </div>
+        <div class="cl-issue-panel" id="panel_${key}">
+          <div class="issue-panel-label">📋 Опишите проблему</div>
+          <textarea class="issue-comment" rows="2" placeholder="Что не так? Опишите проблему..."
+            onchange="Checklist.setComment('${sec.id}','${item.id}',this.value)">${state.comment || ''}</textarea>
+          <div class="issue-actions">
+            <button class="issue-action-btn btn-camera" onclick="Checklist.openCamera('${sec.id}','${item.id}')">📷 Фото/Видео</button>
+            <button class="issue-action-btn btn-assign" onclick="Checklist.assignIssue('${sec.id}','${item.id}')">👤 Назначить</button>
+          </div>
+          <div class="issue-media-preview" id="media_${key}"></div>
+        </div>
+      `;
+      if (state.mediaIds?.length) this._renderMediaThumbs(key, state.mediaIds);
+    }
+    container.appendChild(el);
+    const div = document.createElement('div'); div.className='section-divider';
+    container.appendChild(div);
+  },
+
+  async _renderMediaThumbs(key, mediaIds) {
+    const container = document.getElementById('media_' + key);
+    if (!container) return;
+    container.innerHTML = '';
+    for (const mid of mediaIds) {
+      const m = await DB.get('media', mid);
+      if (!m) continue;
+      const wrap = document.createElement('div');
+      wrap.className = 'media-thumb-wrap';
+      const thumb = m.type === 'image'
+        ? `<img class="media-thumb" src="${m.data}" loading="lazy">`
+        : `<video class="media-thumb" src="${m.data}"></video>`;
+      wrap.innerHTML = `${thumb}<div class="media-thumb-del" onclick="Checklist.removeMedia('${key}','${mid}')">✕</div>`;
+      wrap.querySelector('.media-thumb').addEventListener('click', () => MediaViewer.open(m.data, m.type));
+      container.appendChild(wrap);
+    }
+  },
+
+  toggleSection(secId) {
+    const acc = document.getElementById('acc_' + secId);
+    if (acc) acc.classList.toggle('open');
+  },
+
+  setStatus(secId, itemId, status) {
+    const key = `${secId}_${itemId}`;
+    if (!this.draft.items[key]) this.draft.items[key] = {status:'unchecked', comment:'', mediaIds:[], value:null, assignedTo:null};
+    const prev = this.draft.items[key].status;
+    this.draft.items[key].status = prev === status ? 'unchecked' : status;
+    const cur = this.draft.items[key].status;
+
+    // Update buttons
+    const itemEl = document.getElementById('item_' + key);
+    if (!itemEl) return;
+    itemEl.querySelector('.ok-btn')?.classList.toggle('active', cur === 'ok');
+    itemEl.querySelector('.issue-btn')?.classList.toggle('active', cur === 'issue');
+    itemEl.querySelector('.na-btn')?.classList.toggle('active', cur === 'na');
+    itemEl.classList.toggle('has-issue', cur === 'issue');
+
+    // Haptic
+    if (navigator.vibrate) navigator.vibrate(30);
+
+    this._updateSectionProgress(secId);
+    this._updateProgress();
+    State.saveDraft();
+  },
+
+  setNum(secId, itemId, val) {
+    const key = `${secId}_${itemId}`;
+    if (!this.draft.items[key]) this.draft.items[key] = {status:'ok', comment:'', mediaIds:[], value:null};
+    this.draft.items[key].value = val;
+    this.draft.items[key].status = val ? 'ok' : 'unchecked';
+    this._updateSectionProgress(secId);
+    this._updateProgress();
+    State.saveDraft();
+  },
+
+  setComment(secId, itemId, val) {
+    const key = `${secId}_${itemId}`;
+    if (!this.draft.items[key]) this.draft.items[key] = {status:'issue', comment:'', mediaIds:[], value:null};
+    this.draft.items[key].comment = val;
+    State.saveDraft();
+  },
+
+  openCamera(secId, itemId) {
+    Camera.open(async cap => {
+      const mid = genId();
+      await DB.put('media', {id:mid, type:cap.type, data:cap.data, mime:cap.mime});
+      const key = `${secId}_${itemId}`;
+      if (!this.draft.items[key]) this.draft.items[key] = {status:'issue', comment:'', mediaIds:[], value:null};
+      this.draft.items[key].mediaIds.push(mid);
+      await State.saveDraft();
+      this._renderMediaThumbs(key, this.draft.items[key].mediaIds);
+    });
+  },
+
+  async removeMedia(key, mid) {
+    const [secId, itemId] = key.split('_');
+    const item = this.draft.items[key];
+    if (item) { item.mediaIds = item.mediaIds.filter(m => m !== mid); }
+    await DB.del('media', mid);
+    await State.saveDraft();
+    this._renderMediaThumbs(key, item?.mediaIds || []);
+  },
+
+  assignIssue(secId, itemId) {
+    Assigner.open(user => {
+      const key = `${secId}_${itemId}`;
+      if (!this.draft.items[key]) this.draft.items[key] = {status:'issue', comment:'', mediaIds:[], value:null};
+      this.draft.items[key].assignedTo = {id:user.id, name:user.name};
+      Toast.show(`Назначено: ${user.name}`, '👤');
+      State.saveDraft();
+    });
+  },
+
+  _updateSectionProgress(secId) {
+    const sec = this.sections.find(s => s.id === secId);
+    if (!sec) return;
+    const checked = sec.items.filter(it => {
+      const v = this.draft.items[`${secId}_${it.id}`];
+      return v && v.status !== 'unchecked';
+    }).length;
+    const acc = document.getElementById('acc_' + secId);
+    if (acc) { const prog = acc.querySelector('.section-acc-prog'); if (prog) prog.textContent = `${checked}/${sec.items.length}`; }
+  },
+
+  _updateProgress() {
+    let total = 0, done = 0;
+    this.sections.forEach(sec => {
+      sec.items.forEach(it => {
+        total++;
+        const v = this.draft.items[`${sec.id}_${it.id}`];
+        if (v && v.status !== 'unchecked') done++;
+      });
+    });
+    const pct = total ? Math.round(done / total * 100) : 0;
+    document.getElementById('cl-progress-fill').style.width = pct + '%';
+    document.getElementById('cl-progress-pct').textContent = pct + '%';
+  },
+
+  async submit() {
+    // Validate
+    const issues = [];
+    this.sections.forEach(sec => {
+      sec.items.forEach(it => {
+        const key = `${sec.id}_${it.id}`;
+        const v = this.draft.items[key];
+        if (v && v.status === 'issue') {
+          issues.push({
+            id: genId(),
+            complexId: this.draft.complexId,
+            checklistId: this.draft.id,
+            sectionId: sec.id,
+            sectionName: `${sec.parent ? sec.parent + ' → ' : ''}${sec.section}`,
+            itemId: it.id,
+            itemText: it.text,
+            comment: v.comment || '',
+            mediaIds: v.mediaIds || [],
+            fixMediaIds: [],
+            assignedTo: v.assignedTo || null,
+            status: v.assignedTo ? 'progress' : 'new',
+            createdAt: Date.now(),
+            createdBy: State.user,
+          });
+        }
+      });
+    });
+
+    // Save issues
+    for (const issue of issues) { await State.saveIssue(issue); }
+
+    // Finalize checklist
+    this.draft.status = 'submitted';
+    this.draft.submittedAt = Date.now();
+    this.draft.submittedBy = State.user;
+    this.draft.issueCount = issues.length;
+    await State.saveDraft();
+
+    State.activeDraft = null;
+    Toast.show(`Чеклист сдан! Проблем: ${issues.length}`, issues.length ? '⚠️' : '✅');
+    App.refreshIssuesBadge();
+    App.navigate('dashboard');
+    App.renderDashboard();
+  }
+};
+
+// ============================================================
+//  MAIN APP
+// ============================================================
+const App = {
+  currentView: 'dashboard',
+
+  async init() {
+    await State.load();
+    document.getElementById('hdr-date').textContent = fmtDate();
+
+    // Check Bitrix24
+    if (window.BX24) {
+      BX24.init(() => {
+        BX24.callMethod('user.current', {}, res => {
+          const u = res.data();
+          State.user = {
+            id: String(u.ID),
+            name: u.NAME + ' ' + u.LAST_NAME,
+            photo: u.PERSONAL_PHOTO,
+            emoji: '👤',
+            role: 'admin',
+            position: u.WORK_POSITION || 'Администратор',
+          };
+          // Load all users
+          BX24.callMethod('user.get', {filter:{ACTIVE:true}}, r => {
+            State.users = r.data().map(u => ({
+              id: String(u.ID),
+              name: u.NAME + ' ' + u.LAST_NAME,
+              photo: u.PERSONAL_PHOTO,
+              emoji: '👤',
+              role: 'executor',
+              position: u.WORK_POSITION || 'Сотрудник',
+            }));
+          });
+          this._launchApp();
+        });
+      });
+    } else {
+      const saved = localStorage.getItem('cp_user');
+      if (saved) {
+        State.user = JSON.parse(saved);
+        this._launchApp();
+      }
+      // else show auth screen
+    }
+
+    // Issues filter chips
+    document.getElementById('issues-filters').addEventListener('click', e => {
+      const chip = e.target.closest('.filter-chip');
+      if (!chip) return;
+      document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      this.renderIssues(chip.dataset.filter);
+    });
+
+    // Theme from storage
+    const t = localStorage.getItem('cp_theme') || 'dark';
+    this._applyTheme(t);
+  },
+
+  _launchApp() {
+    document.getElementById('auth-screen').style.display = 'none';
+    document.getElementById('app').classList.add('visible');
+    this._updateHeader();
+    this.renderDashboard();
+    this.renderIssues();
+    this.renderHistory();
+    this.refreshIssuesBadge();
+  },
+
+  _updateHeader() {
+    const u = State.user;
+    if (!u) return;
+    const avatar = document.getElementById('hdr-avatar');
+    avatar.innerHTML = u.photo ? `<img src="${u.photo}">` : u.emoji;
+    const settings = document.getElementById('settings-user');
+    settings.innerHTML = `
+      <div class="su-avatar">${u.photo ? `<img src="${u.photo}">` : u.emoji}</div>
+      <div>
+        <div class="su-name">${u.name}</div>
+        <div class="su-role"><span class="role-badge role-${u.role}">${ROLE_LABELS[u.role]}</span></div>
+      </div>
+    `;
+  },
+
+  authBitrix() {
+    if (window.BX24) { BX24.init(() => BX24.openApplication()); }
+    else { Toast.show('Битрикс24 недоступен. Используйте Демо режим.', '⚠️'); }
+  },
+
+  showDemoPicker() {
+    document.getElementById('auth-form').style.display = 'none';
+    const picker = document.getElementById('demo-picker');
+    picker.style.display = 'block';
+    picker.innerHTML = '<div class="demo-title">Выберите пользователя</div>';
+    DEMO_USERS.forEach(u => {
+      const el = document.createElement('div');
+      el.className = 'demo-user';
+      el.innerHTML = `
+        <div class="demo-avatar" style="background:linear-gradient(135deg,var(--accent),var(--pink))">${u.emoji}</div>
+        <div class="demo-user-info">
+          <div class="demo-user-name">${u.name}</div>
+          <div class="demo-user-role"><span class="role-badge role-${u.role}">${ROLE_LABELS[u.role]}</span></div>
+        </div>
+      `;
+      el.onclick = () => {
+        State.user = u;
+        localStorage.setItem('cp_user', JSON.stringify(u));
+        this._launchApp();
+      };
+      picker.appendChild(el);
+    });
+  },
+
+  navigate(view) {
+    if (view === 'checklist' && !State.activeDraft) { return; }
+    this.currentView = view;
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + view)?.classList.add('active');
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.view === view));
+    if (view === 'issues') this.renderIssues();
+    if (view === 'history') this.renderHistory();
+    if (view === 'dashboard') this.renderDashboard();
+  },
+
+  goBack() {
+    this.navigate('dashboard');
+  },
+
+  renderDashboard() {
+    const u = State.user;
+    const hour = new Date().getHours();
+    const greet = hour < 12 ? 'Доброе утро' : hour < 18 ? 'Добрый день' : 'Добрый вечер';
+    document.getElementById('greeting-text').textContent = `${greet}, ${u?.name?.split(' ')[0] || ''}!`;
+
+    // Stats
+    const submitted = State.checklists.filter(c => c.status === 'submitted');
+    const openIssues = State.issues.filter(i => i.status === 'new' || i.status === 'progress');
+    const fixedIssues = State.issues.filter(i => i.status === 'fixed' || i.status === 'verified');
+    const statsRow = document.getElementById('stats-row');
+    statsRow.innerHTML = `
+      <div class="stat-card"><div class="stat-num">${submitted.length}</div><div class="stat-lbl">Проверок</div></div>
+      <div class="stat-card"><div class="stat-num red">${openIssues.length}</div><div class="stat-lbl">Проблем</div></div>
+      <div class="stat-card"><div class="stat-num green">${fixedIssues.length}</div><div class="stat-lbl">Решено</div></div>
+    `;
+
+    // Complex cards
+    const cards = document.getElementById('complex-cards');
+    cards.innerHTML = '';
+    COMPLEXES.forEach(cx => {
+      const todayChecks = State.checklists.filter(c => c.complexId === cx.id && c.date === todayKey() && c.status === 'submitted');
+      const draft = State.checklists.find(c => c.complexId === cx.id && c.date === todayKey() && c.status === 'draft');
+      const cxIssues = State.issues.filter(i => i.complexId === cx.id && (i.status === 'new' || i.status === 'progress'));
+
+      let pct = 0;
+      if (draft) {
+        const secs = CHECKLIST_DATA[cx.id] || [];
+        let total = 0, done = 0;
+        secs.forEach(sec => {
+          sec.items.forEach(it => {
+            total++;
+            const v = draft.items[`${sec.id}_${it.id}`];
+            if (v && v.status !== 'unchecked') done++;
+          });
+        });
+        pct = total ? Math.round(done / total * 100) : 0;
+      }
+
+      const card = document.createElement('div');
+      card.className = 'complex-card';
+      card.innerHTML = `
+        <div class="complex-header">
+          <div class="complex-icon" style="background:${cx.grad}">${cx.emoji}</div>
+          <div class="complex-info">
+            <div class="complex-name">${cx.name}</div>
+            <div class="complex-meta">${todayChecks.length > 0 ? `✅ Проверено сегодня` : draft ? '📝 Черновик' : 'Не проверено'}</div>
+          </div>
+          <div class="complex-arrow">›</div>
+        </div>
+        ${draft ? `<div class="complex-progress"><div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${cx.grad}"></div></div><div class="progress-label"><span>${pct}% заполнено</span><span>${cxIssues.length ? cxIssues.length + ' проблем' : 'Проблем нет'}</span></div></div>` : ''}
+        <div style="padding:0 20px 16px;display:flex;gap:8px;flex-wrap:wrap">
+          ${cxIssues.length ? `<span class="tag issue">⚠️ ${cxIssues.length} проблем</span>` : `<span class="tag ok">✅ Всё в порядке</span>`}
+          ${todayChecks.length ? `<span class="tag ok">📋 ${todayChecks.length} проверок</span>` : ''}
+        </div>
+      `;
+
+      const canFill = !State.user || State.user.role !== 'observer';
+      if (canFill) {
+        card.onclick = () => {
+          Checklist.start(cx.id);
+        };
+      }
+      cards.appendChild(card);
+    });
+
+    // Recent
+    const recent = document.getElementById('recent-list');
+    const recentChecks = [...State.checklists].sort((a,b) => (b.submittedAt || b.createdAt) - (a.submittedAt || a.createdAt)).slice(0,5);
+    if (!recentChecks.length) {
+      recent.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">Нет проверок</div><div class="empty-sub">Выберите комплекс выше, чтобы начать первую проверку</div></div>';
+    } else {
+      recent.innerHTML = '';
+      recentChecks.forEach(c => {
+        const cx = COMPLEXES.find(x => x.id === c.complexId);
+        const el = document.createElement('div');
+        el.className = 'recent-item';
+        const d = new Date(c.submittedAt || c.createdAt);
+        el.innerHTML = `
+          <div class="recent-icon" style="background:${cx?.grad}">${cx?.emoji}</div>
+          <div class="recent-info">
+            <div class="recent-name">${cx?.name}</div>
+            <div class="recent-meta">${fmtDate(d)} · ${c.issueCount !== undefined ? c.issueCount + ' проблем' : 'черновик'}</div>
+          </div>
+          <div class="status-dot ${c.status === 'submitted' ? (c.issueCount ? 'issue' : 'ok') : 'draft'}"></div>
+        `;
+        el.onclick = () => {
+          if (c.status === 'draft') { Checklist.start(c.complexId); }
+        };
+        recent.appendChild(el);
+      });
+    }
+  },
+
+  renderIssues(filter = 'all') {
+    const list = document.getElementById('issues-list');
+    let issues = [...State.issues].sort((a,b) => b.createdAt - a.createdAt);
+    if (filter !== 'all') issues = issues.filter(i => i.status === filter);
+    if (State.user?.role === 'executor') issues = issues.filter(i => !i.assignedTo || i.assignedTo.id === State.user.id);
+    if (!issues.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">🎉</div><div class="empty-title">Проблем нет</div><div class="empty-sub">Всё под контролем!</div></div>';
+      return;
+    }
+    list.innerHTML = '';
+    issues.forEach(issue => {
+      const cx = COMPLEXES.find(c => c.id === issue.complexId);
+      const statusClass = {new:'status-new', progress:'status-progress', fixed:'status-fixed', verified:'status-verified'}[issue.status] || 'status-new';
+      const chipClass   = {new:'chip-new', progress:'chip-progress', fixed:'chip-fixed', verified:'chip-verified'}[issue.status] || 'chip-new';
+      const chipLabel   = {new:'Новая', progress:'В работе', fixed:'Исправлена', verified:'Проверена'}[issue.status] || 'Новая';
+      const card = document.createElement('div');
+      card.className = `issue-card ${statusClass}`;
+      card.innerHTML = `
+        <div class="issue-card-header">
+          <div class="issue-status-bar"></div>
+          <div class="issue-card-body">
+            <div class="issue-card-title">${issue.itemText}</div>
+            <div class="issue-card-meta">
+              <span>${cx?.emoji} ${cx?.name}</span>
+              <span>·</span>
+              <span>${issue.sectionName}</span>
+              <span class="issue-status-chip ${chipClass}">${chipLabel}</span>
+            </div>
+            ${issue.assignedTo ? `<div style="font-size:12px;color:var(--t2);margin-top:4px">👤 ${issue.assignedTo.name}</div>` : ''}
+            ${issue.comment ? `<div style="font-size:13px;color:var(--t2);margin-top:6px;font-style:italic">"${issue.comment}"</div>` : ''}
+          </div>
+        </div>
+      `;
+      card.onclick = () => IssueModal.open(issue.id);
+      list.appendChild(card);
+    });
+  },
+
+  renderHistory() {
+    const list = document.getElementById('history-list');
+    const submitted = [...State.checklists].filter(c => c.status === 'submitted').sort((a,b) => b.submittedAt - a.submittedAt);
+    document.getElementById('history-sub').textContent = `${submitted.length} проверок всего`;
+    if (!submitted.length) {
+      list.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">История пуста</div><div class="empty-sub">Завершённые проверки появятся здесь</div></div>';
+      return;
+    }
+    list.innerHTML = '';
+    submitted.forEach(c => {
+      const cx = COMPLEXES.find(x => x.id === c.complexId);
+      const d = new Date(c.submittedAt);
+      const card = document.createElement('div');
+      card.className = 'history-card';
+      card.innerHTML = `
+        <div class="history-card-top">
+          <div class="history-icon" style="background:${cx?.grad}">${cx?.emoji}</div>
+          <div class="history-info">
+            <div class="history-name">${cx?.name}</div>
+            <div class="history-date">${fmtDate(d)} в ${fmtTime(d)}</div>
+          </div>
+        </div>
+        <div class="history-meta">
+          ${c.issueCount ? `<span class="tag issue">⚠️ ${c.issueCount} проблем</span>` : `<span class="tag ok">✅ Без проблем</span>`}
+          <span class="tag">👤 ${c.submittedBy?.name || '—'}</span>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+  },
+
+  refreshIssuesBadge() {
+    const open = State.issues.filter(i => i.status === 'new' || i.status === 'progress').length;
+    const badge = document.getElementById('issues-badge');
+    if (open) { badge.textContent = open; badge.classList.remove('hidden'); }
+    else badge.classList.add('hidden');
+  },
+
+  async submitChecklist() {
+    if (!State.activeDraft) return;
+    const secs = Checklist.sections;
+    let total = 0, done = 0;
+    secs.forEach(sec => { sec.items.forEach(it => { total++; const v = State.activeDraft.items[`${sec.id}_${it.id}`]; if (v && v.status !== 'unchecked') done++; }); });
+    const pct = total ? Math.round(done / total * 100) : 0;
+    if (pct < 50 && !confirm(`Заполнено только ${pct}%. Вы уверены, что хотите сдать чеклист?`)) return;
+    await Checklist.submit();
+  },
+
+  openSettings() { document.getElementById('settings-panel').classList.add('open'); },
+  closeSettings() { document.getElementById('settings-panel').classList.remove('open'); },
+
+  toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    this._applyTheme(cur === 'dark' ? 'light' : 'dark');
+  },
+
+  _applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('cp_theme', theme);
+    document.getElementById('btn-theme').textContent = theme === 'dark' ? '☀️' : '🌙';
+    document.getElementById('theme-toggle').classList.toggle('on', theme === 'dark');
+    document.querySelector('meta[name="theme-color"]').setAttribute('content', theme === 'dark' ? '#0d0d14' : '#f0f0fa');
+  },
+
+  toggleNotifications() {
+    document.getElementById('notif-toggle').classList.toggle('on');
+    if (Notification?.permission !== 'granted') { Notification?.requestPermission(); }
+  },
+
+  async exportData() {
+    const data = { checklists: State.checklists, issues: State.issues, exportedAt: new Date().toISOString() };
+    const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = `checkpro_export_${todayKey()}.json`; a.click();
+    URL.revokeObjectURL(url);
+    Toast.show('Данные экспортированы', '📤');
+  },
+
+  logout() {
+    localStorage.removeItem('cp_user');
+    State.user = null;
+    document.getElementById('app').classList.remove('visible');
+    document.getElementById('auth-screen').style.display = '';
+    document.getElementById('auth-form').style.display = 'block';
+    document.getElementById('demo-picker').style.display = 'none';
+    this.closeSettings();
+  }
+};
+
+// ============================================================
+//  BOOT
+// ============================================================
+document.addEventListener('DOMContentLoaded', () => App.init());
+</script>
+</body>
+</html>
